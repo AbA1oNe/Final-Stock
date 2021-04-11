@@ -2,7 +2,7 @@
 #include <vector>
 #include <iomanip>
 #include <fstream>
-//每次客戶執行一次操作或是股票刷新則updateTimes++,並且寫檔再重新讀檔
+//股票刷新則updateTimes++,並且寫檔再重新讀檔
 
 using namespace std;
 
