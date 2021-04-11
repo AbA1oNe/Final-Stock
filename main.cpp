@@ -67,23 +67,25 @@ void get()
     cout << Enterprise[2].Stock_Name << ' ' << Enterprise[2].Hang << ' ' << Enterprise[2].updateTimes << endl;
 }
 
-// void Write_File()
-// {
-//     ofstream stockData;
-//     stockData.open("stockData.txt");
-//     if (!stockData)
-//     {
-//         cout << "無法開啟\"stockData.txt\"" << endl;
-//     }
-
-//     for (int i=0; i<TOTALSTOCKS; i++)
-//     {
-//         stockData << Enter[i].Stock_Issue_Price << ' ' << Enter[i].Stock_Listed_Price << ' ' << Enter[i].Market_Value << ' '
-//         << Enter[i].Stock_Name << ' ' << Enter[i].Stock_Code << ' ' << Enter[i].Hang << ' ' << Enter[i].Number_Of_Listed_Stocks << ' '
-//         << Enter[i].Free_Stocks_Float << ' ' << Enter[i].The_Share_Volume_Of_Stocks << endl;
-//     }
-//     stockData.close();
-// }
+void Write_File()
+{
+    ofstream stockData;
+    for (int i=0; i<TOTALSTOCKS; i++)
+    {
+        stockData.open("stockData" + STOCKNAME[i] + ".txt", ios::app);
+        if (!stockData)
+        {
+            cout <<"Unable to open: "<< "stockData" << STOCKNAME[i] << endl;
+        }
+        else {
+            stockData << Enterprise[i].Stock_Name << ' ' << Enterprise[i].Stock_Code << ' ' << Enterprise[i].updateTimes <<
+            ' ' << Enterprise[i].Stock_Issue_Price << ' ' << Enterprise[i].Stock_Listed_Price << ' ' << Enterprise[i].Market_Value <<
+            ' ' << Enterprise[i].Hang << ' ' << Enterprise[i].Number_Of_Listed_Stocks << ' ' << Enterprise[i].Free_Stocks_Float << 
+            ' ' << Enterprise[i].The_Share_Volume_Of_Stocks << endl;
+        }
+        stockData.close();
+    }  
+}
 
 void Stock::setEverything(string name, string code, int update, double issue, double listed, double market, int hang, long long lisedNumber, long long floatStock, long long shareVolume)
 {   
@@ -144,7 +146,8 @@ int main()
         }
         stockData.close();
     }   
-    get();
+    get();//for test
+    Write_File();// testing write file function
 
     // for (int i=0; i<TOTALSTOCKS; i++)//讀檔
     // {
