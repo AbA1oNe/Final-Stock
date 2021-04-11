@@ -6,30 +6,32 @@
 using namespace std;
 
 const int TOTALSTOCKS = 10;
+const string STOCKNAME[TOTALSTOCKS] = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J"};
 
 class Stock
 {
 private:
-
+    string Stock_Name;//股票名稱
+    string Stock_Code;//股票代碼
+    int updateTimes;//更新次數, 未來折線圖使用
     double Stock_Issue_Price;//股票發行價
     double Stock_Listed_Price;//股票上市價
     double Market_Value;//市值
-    string Stock_Name;//股票名稱
-    string Stock_Code;//股票代碼
-    bool Hang;//是否掛起
+    int Hang;//是否掛起 1:有 0:沒有
     long long int Number_Of_Listed_Stocks;//上市股票數
     long long int Free_Stocks_Float;//自由流通股份
     long long int The_Share_Volume_Of_Stocks;//股票成交量
 
 public:
     Stock()
-    {
+    {   
+        Stock_Name = "";
+        Stock_Code = "";
+        updateTimes = 0;
         Stock_Issue_Price = 0;
         Stock_Listed_Price = 0;
         Market_Value = 0;
-        Stock_Name = "";
-        Stock_Code = "";
-        Hang = true;
+        Hang = 0;
         Number_Of_Listed_Stocks = 0;
         Free_Stocks_Float = 0;
         The_Share_Volume_Of_Stocks = 0;
@@ -52,37 +54,45 @@ public:
     */
     void Hang_Up_Stock();//掛起股票
     void Un_Hang_Stock();//解掛股票
-    void Write_File(vector <Stock>);//寫檔(每次執行完存檔)
-    void setEverything(double, double, double, string, string, bool, long long, long long, long long);
+    friend void Write_File();
+    void setEverything(string, string, int, double, double, double, int, long long, long long, long long);
+    friend void get();
 
-}Enter[TOTALSTOCKS];
+}Enterprise[TOTALSTOCKS];
 
-void Stock::Write_File(vector <Stock> data)
+void get()
 {
-    ofstream stockData;
-    stockData.open("stockData.txt");
-    if (!stockData)
-    {
-        cout << "無法開啟\"stockData.txt\"" << endl;
-    }
-
-    int vectorLen = data.size();
-
-    for (int i=0; i<vectorLen; i++)
-    {
-        stockData << data[i].Stock_Issue_Price << ' ' << data[i].Stock_Listed_Price << ' ' << data[i].Market_Value << ' '
-        << data[i].Stock_Name << ' ' << data[i].Stock_Code << ' ' << data[i].Hang << ' ' << data[i].Number_Of_Listed_Stocks << ' '
-        << data[i].Free_Stocks_Float << ' ' << data[i].The_Share_Volume_Of_Stocks << endl;
-    }
+    cout << Enterprise[0].Stock_Name <<' '<<  Enterprise[0].Stock_Code << ' ' << Enterprise[0].Hang << endl;
+    cout << Enterprise[1].Stock_Name << endl;
+    cout << Enterprise[2].Stock_Name << ' ' << Enterprise[2].Hang << ' ' << Enterprise[2].updateTimes << endl;
 }
 
-void Stock::setEverything(double issue, double listed, double market, string name, string code, bool hang, long long lisedNumber, long long floatStock, long long shareVolume)
-{
+// void Write_File()
+// {
+//     ofstream stockData;
+//     stockData.open("stockData.txt");
+//     if (!stockData)
+//     {
+//         cout << "無法開啟\"stockData.txt\"" << endl;
+//     }
+
+//     for (int i=0; i<TOTALSTOCKS; i++)
+//     {
+//         stockData << Enter[i].Stock_Issue_Price << ' ' << Enter[i].Stock_Listed_Price << ' ' << Enter[i].Market_Value << ' '
+//         << Enter[i].Stock_Name << ' ' << Enter[i].Stock_Code << ' ' << Enter[i].Hang << ' ' << Enter[i].Number_Of_Listed_Stocks << ' '
+//         << Enter[i].Free_Stocks_Float << ' ' << Enter[i].The_Share_Volume_Of_Stocks << endl;
+//     }
+//     stockData.close();
+// }
+
+void Stock::setEverything(string name, string code, int update, double issue, double listed, double market, int hang, long long lisedNumber, long long floatStock, long long shareVolume)
+{   
+    this->Stock_Name = name;
+    this->Stock_Code = code;
+    this->updateTimes = update;
     this->Stock_Issue_Price = issue;
     this->Stock_Listed_Price = listed;
     this->Market_Value = market;
-    this->Stock_Name = name;
-    this->Stock_Code = code;
     this->Hang = hang;
     this->Number_Of_Listed_Stocks = lisedNumber;
     this->Free_Stocks_Float = floatStock;
@@ -114,23 +124,32 @@ public:
 
 int main()
 {
+    int update;//更新次數
     double issuePrice, listedPrice, marketValue;//發行價 上市價 市值
     string name, code;//名子 代碼
-    bool hang;//掛起
+    int hang;//掛起
     long long listedNumber, shareVolume, floatNumber;//上市股票數 股票成交量 自由流通股份
 
     ifstream stockData;
-    stockData.open("stockData.txt");
-    if (!stockData)
+    for (int i=0; i<TOTALSTOCKS; i++)
     {
-        cout << "無法開啟\"stockData.txt\"" << endl;
-    }
+        stockData.open("stockData" + STOCKNAME[i] + ".txt");
+        if (!stockData)
+        {
+            cout <<"Unable to open: "<< "stockData" << STOCKNAME[i] << endl;
+        }
+        else {
+            stockData >> name >> code >> update >> issuePrice >> listedPrice >> marketValue >> hang >> listedNumber >> floatNumber >> shareVolume;
+            Enterprise[i].setEverything(name, code, update, issuePrice, listedPrice, marketValue, hang, listedNumber, floatNumber, shareVolume);
+        }
+        stockData.close();
+    }   
+    get();
 
-    for (int i=0; i<TOTALSTOCKS; i++)//讀檔
-    {
-        stockData >> issuePrice >> listedPrice >> marketValue >> name >> code >> hang >> listedNumber >> floatNumber >> shareVolume;
-        Enter[i].setEverything(issuePrice, listedPrice, marketValue, name, code, hang, listedNumber, floatNumber, shareVolume);
-    }
-    stockData.close();
+    // for (int i=0; i<TOTALSTOCKS; i++)//讀檔
+    // {
+    //     stockData >> issuePrice >> listedPrice >> marketValue >> name >> code >> hang >> listedNumber >> floatNumber >> shareVolume;
+    //     Enter[i].setEverything(issuePrice, listedPrice, marketValue, name, code, hang, listedNumber, floatNumber, shareVolume);
+    // }
     
 }
