@@ -2,11 +2,12 @@
 #include <vector>
 #include <iomanip>
 #include <fstream>
+//每次客戶執行一次操作或是股票刷新則updateTimes++,並且寫檔再重新讀檔
 
 using namespace std;
 
-const int TOTALSTOCKS = 10;
-const string STOCKNAME[TOTALSTOCKS] = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J"};
+const int TOTALSTOCKS = 10;//設定有放幾個股票的資料
+const string STOCKNAME[TOTALSTOCKS] = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J"};//TOTALSTOCKS個股票資料的txt檔案
 
 class Stock
 {
@@ -54,9 +55,9 @@ public:
     */
     void Hang_Up_Stock();//掛起股票
     void Un_Hang_Stock();//解掛股票
-    friend void Write_File();
-    void setEverything(string, string, int, double, double, double, int, long long, long long, long long);
-    friend void get();
+    friend void Write_File();//寫檔
+    void setEverything(string, string, int, double, double, double, int, long long, long long, long long);//設定private data
+    friend void get();//測試讀入的資料
 
 }Enterprise[TOTALSTOCKS];
 
@@ -67,7 +68,7 @@ void get()
     cout << Enterprise[2].Stock_Name << ' ' << Enterprise[2].Hang << ' ' << Enterprise[2].updateTimes << endl;
 }
 
-void Write_File()
+void Write_File()//因為未來預計要做折線圖，所以用ios::app讓每一次的更新都可以被記錄下來
 {
     ofstream stockData;
     for (int i=0; i<TOTALSTOCKS; i++)
@@ -88,7 +89,7 @@ void Write_File()
 }
 
 void Stock::setEverything(string name, string code, int update, double issue, double listed, double market, int hang, long long lisedNumber, long long floatStock, long long shareVolume)
-{   
+{   //設定class的private data
     this->Stock_Name = name;
     this->Stock_Code = code;
     this->updateTimes = update;
@@ -124,7 +125,7 @@ public:
     void Menu();//選擇菜單
 };
 
-int main()
+void readFile()
 {
     int update;//更新次數
     double issuePrice, listedPrice, marketValue;//發行價 上市價 市值
@@ -141,18 +142,19 @@ int main()
             cout <<"Unable to open: "<< "stockData" << STOCKNAME[i] << endl;
         }
         else {
-            stockData >> name >> code >> update >> issuePrice >> listedPrice >> marketValue >> hang >> listedNumber >> floatNumber >> shareVolume;
+            while (stockData >> name)//反覆讀入直到讀到最後(最新)的一行資料
+            {
+                stockData >> code >> update >> issuePrice >> listedPrice >> marketValue >> hang >> listedNumber >> floatNumber >> shareVolume;
+            }
             Enterprise[i].setEverything(name, code, update, issuePrice, listedPrice, marketValue, hang, listedNumber, floatNumber, shareVolume);
         }
         stockData.close();
-    }   
-    get();//for test
-    Write_File();// testing write file function
+    }
+}
 
-    // for (int i=0; i<TOTALSTOCKS; i++)//讀檔
-    // {
-    //     stockData >> issuePrice >> listedPrice >> marketValue >> name >> code >> hang >> listedNumber >> floatNumber >> shareVolume;
-    //     Enter[i].setEverything(issuePrice, listedPrice, marketValue, name, code, hang, listedNumber, floatNumber, shareVolume);
-    // }
-    
+int main()
+{
+    readFile();
+    get();//for test
+    Write_File();// testing write file function    
 }
