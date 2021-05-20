@@ -2,73 +2,128 @@
 #include <vector>
 #include <iomanip>
 #include <fstream>
-//è‚¡ç¥¨åˆ·æ–°å‰‡updateTimes++,ä¸¦ä¸”å¯«æª”å†é‡æ–°è®€æª”
+//ªÑ²¼¨ê·s«hupdateTimes++,¨Ã¥B¼gÀÉ¦A­«·sÅªÀÉ
 
 using namespace std;
 
-const int TOTALSTOCKS = 10;//è¨­å®šæœ‰æ”¾å¹¾å€‹è‚¡ç¥¨çš„è³‡æ–™
-const string STOCKNAME[TOTALSTOCKS] = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J"};//TOTALSTOCKSå€‹è‚¡ç¥¨è³‡æ–™çš„txtæª”æ¡ˆ
+const int TOTALSTOCKS = 10;//³]©w¦³©ñ´X­ÓªÑ²¼ªº¸ê®Æ
+const string STOCKNAME[TOTALSTOCKS] = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J"};//TOTALSTOCKS­ÓªÑ²¼¸ê®ÆªºtxtÀÉ®×
 
 class Stock
 {
 private:
-    string Stock_Name;//è‚¡ç¥¨åç¨±
-    string Stock_Code;//è‚¡ç¥¨ä»£ç¢¼
-    int updateTimes;//æ›´æ–°æ¬¡æ•¸, æœªä¾†æŠ˜ç·šåœ–ä½¿ç”¨
-    double Stock_Issue_Price;//è‚¡ç¥¨ç™¼è¡Œåƒ¹
-    double Stock_Listed_Price;//è‚¡ç¥¨ä¸Šå¸‚åƒ¹
-    double Market_Value;//å¸‚å€¼
-    int Hang;//æ˜¯å¦æ›èµ· 1:æœ‰ 0:æ²’æœ‰
-    long long int Number_Of_Listed_Stocks;//ä¸Šå¸‚è‚¡ç¥¨æ•¸
-    long long int Free_Stocks_Float;//è‡ªç”±æµé€šè‚¡ä»½
-    long long int The_Share_Volume_Of_Stocks;//è‚¡ç¥¨æˆäº¤é‡
+    string Stock_Name;//ªÑ²¼¦WºÙ
+    string Stock_Code;//ªÑ²¼¥N½X
+    int updateTimes;//§ó·s¦¸¼Æ, ¥¼¨Ó§é½u¹Ï¨Ï¥Î
+    double Stock_Issue_Price;//ªÑ²¼µo¦æ»ù
+    double Stock_Listed_Price;//ªÑ²¼¤W¥«»ù
+    double Market_Value;//¥«­È
+    long long int Free_Stocks_Float;//¦Û¥Ñ¬y³qªÑ¥÷
+    long long int The_Share_Volume_Of_Stocks;//ªÑ²¼¦¨¥æ¶q
+    double openingPrice;//¶}½L»ù
+    double closingPrice;//¦¬½L»ù
+    double currentPrice;//¶R½æ»ù
 
 public:
     Stock()
-    {   
+    {
         Stock_Name = "";
         Stock_Code = "";
         updateTimes = 0;
         Stock_Issue_Price = 0;
         Stock_Listed_Price = 0;
         Market_Value = 0;
-        Hang = 0;
-        Number_Of_Listed_Stocks = 0;
         Free_Stocks_Float = 0;
         The_Share_Volume_Of_Stocks = 0;
+        openingPrice = 0;
+        closingPrice = 0;
+        currentPrice = 0;
     }
 
-    void Add_New_Stock();//åŠ å…¥æ–°è‚¡ç¥¨(ç®¡ç†å“¡)
-    void Delete_Stock();//åˆªé™¤è‚¡ç¥¨(ç®¡ç†å“¡)
-    void Modify_Stock();//ä¿®æ”¹è‚¡ç¥¨è³‡æ–™(ç®¡ç†å“¡)
-    void Display_Stock_Market_Information();
-    /*å±•ç¤ºå„é …è‚¡å¸‚ä¿¡æ¯
+    void setEverything(string, string, int, double, double, double, long long, long long, long long, long long, long long);
+    void Add_New_Stock();//¥[¤J·sªÑ²¼(ºŞ²z­û)
+    void Delete_Stock();//§R°£ªÑ²¼(ºŞ²z­û)
+    void Modify_Stock();//­×§ïªÑ²¼¸ê®Æ(ºŞ²z­û)
+    friend void Display_Stock_Market_Information(int );//receive option number+1 if -1, then it's display all info
+    /*®i¥Ü¦U¶µªÑ¥««H®§
     (
-    1.é–‹ç›¤åƒ¹ï¼šOpening Price
-    2.æ”¶ç›¤åƒ¹ï¼šClosing Price
-    3.æ¼²åœï¼šLimit Up
-    4.è·Œåœï¼šLimit Down
-    5.è²·åƒ¹ï¼šBid Price
-    6.è³£åƒ¹ï¼šAsk Price / Offer Price
-    ......ç­‰
+    1.¶}½L»ù¡GOpening Price
+    2.¦¬½L»ù¡GClosing Price
+    3.º¦°±¡GLimit Up
+    4.¶^°±¡GLimit Down
+    5.»ù®æ : Price
+    ......µ¥
     )
     */
-    void Hang_Up_Stock();//æ›èµ·è‚¡ç¥¨
-    void Un_Hang_Stock();//è§£æ›è‚¡ç¥¨
-    friend void Write_File();//å¯«æª”
-    void setEverything(string, string, int, double, double, double, int, long long, long long, long long);//è¨­å®šprivate data
-    friend void get();//æ¸¬è©¦è®€å…¥çš„è³‡æ–™
+    friend void Write_File();//¼gÀÉ
+                            //¥H¤U¬°®³private data
+    string getStock_Name();
+    string getStock_Code();
+    int getUpdateTimes();
+    double getStock_Issue_Price();
+    double getStock_Listed_Price();
+    double getMarket_Value();
+    long long int getFree_Stocks_Float();
+    long long int getThe_Share_Volume_Of_Stocks();
+    double getOpeningPrice();
+    double getClosingPrice();
+    double getPrice();
+
+    bool checkFloat();//ÀË¬d¯B°Ê ¦pªGº¦«htrue
+    double randomChange();//ÀH®É¶¡§ïÅÜ¥Ø«eªº»ù®æ
 
 }Enterprise[TOTALSTOCKS];
 
-void get()
-{
-    cout << Enterprise[0].Stock_Name <<' '<<  Enterprise[0].Stock_Code << ' ' << Enterprise[0].Hang << endl;
-    cout << Enterprise[1].Stock_Name << endl;
-    cout << Enterprise[2].Stock_Name << ' ' << Enterprise[2].Hang << ' ' << Enterprise[2].updateTimes << endl;
+void Stock::setEverything(string name, string code, int update, double issue, double listed, double market, long long floatStock, long long shareVolume, long long opening, long long closing, long long current)
+{   //³]©wclassªºprivate data
+    this->Stock_Name = name;
+    this->Stock_Code = code;
+    this->updateTimes = update;
+    this->Stock_Issue_Price = issue;
+    this->Stock_Listed_Price = listed;
+    this->Market_Value = market;
+    this->Free_Stocks_Float = floatStock;
+    this->The_Share_Volume_Of_Stocks = shareVolume;
+    this->openingPrice = opening;
+    this->closingPrice = closing;
+    this->currentPrice = current;
 }
 
-void Write_File()//å› ç‚ºæœªä¾†é è¨ˆè¦åšæŠ˜ç·šåœ–ï¼Œæ‰€ä»¥ç”¨ios::appè®“æ¯ä¸€æ¬¡çš„æ›´æ–°éƒ½å¯ä»¥è¢«è¨˜éŒ„ä¸‹ä¾†
+string Stock::getStock_Name()
+{
+    return this->Stock_Name;
+}
+
+class Customer
+{
+private:
+    string Customer_Name;//¥Î¤á¦W
+    string Customer_Password;//±K½X
+    struct holdingStock
+    {
+        long long holdingNumbers;//«ù¦³ªÑ²¼¼Æ¶q
+        string Holding_Stock_Name;//«ù¦³ªÑ²¼¦WºÙ
+        string Holding_Stock_code;//«ù¦³ªÑ²¼¥N½X
+        double StockPrice;//¸ÓªÑ²¼¶R¶iªº»ù®æ
+    };
+    double Balance;//²{ª÷¾lÃB
+    double Total_Assets;//Á`¸ê²£
+    bool Administrator;//¬O§_¬°ºŞ²z­û
+
+public:
+    void Log_In();//µn¿ı
+    void Register();//µù¥U
+    void buy();//¶R
+    void sell();//½æ
+    string getName();
+    string getPass();
+    holdingStock getHoldingStock();
+    double getBalance();
+    double getTotalAsset();
+    bool getAdmin();
+};
+
+void Write_File()//¦]¬°¥¼¨Ó¹w­p­n°µ§é½u¹Ï¡A©Ò¥H¥Îios::appÅı¨C¤@¦¸ªº§ó·s³£¥i¥H³Q°O¿ı¤U¨Ó
 {
     ofstream stockData;
     for (int i=0; i<TOTALSTOCKS; i++)
@@ -81,57 +136,21 @@ void Write_File()//å› ç‚ºæœªä¾†é è¨ˆè¦åšæŠ˜ç·šåœ–ï¼Œæ‰€ä»¥ç”¨ios::appè®“æ¯ä¸
         else {
             stockData << Enterprise[i].Stock_Name << ' ' << Enterprise[i].Stock_Code << ' ' << Enterprise[i].updateTimes <<
             ' ' << Enterprise[i].Stock_Issue_Price << ' ' << Enterprise[i].Stock_Listed_Price << ' ' << Enterprise[i].Market_Value <<
-            ' ' << Enterprise[i].Hang << ' ' << Enterprise[i].Number_Of_Listed_Stocks << ' ' << Enterprise[i].Free_Stocks_Float << 
-            ' ' << Enterprise[i].The_Share_Volume_Of_Stocks << endl;
+            ' ' << ' ' << Enterprise[i].Free_Stocks_Float <<
+            ' ' << Enterprise[i].The_Share_Volume_Of_Stocks <<
+            ' ' << Enterprise[i].openingPrice << ' ' << Enterprise[i].closingPrice << ' ' <<
+            ' ' << Enterprise[i].currentPrice <<endl;
         }
         stockData.close();
-    }  
+    }
 }
-
-void Stock::setEverything(string name, string code, int update, double issue, double listed, double market, int hang, long long lisedNumber, long long floatStock, long long shareVolume)
-{   //è¨­å®šclassçš„private data
-    this->Stock_Name = name;
-    this->Stock_Code = code;
-    this->updateTimes = update;
-    this->Stock_Issue_Price = issue;
-    this->Stock_Listed_Price = listed;
-    this->Market_Value = market;
-    this->Hang = hang;
-    this->Number_Of_Listed_Stocks = lisedNumber;
-    this->Free_Stocks_Float = floatStock;
-    this->The_Share_Volume_Of_Stocks = shareVolume;
-}
-// class Customer
-// {
-// private:
-//     string Customer_Name[elements];//ç”¨æˆ¶å
-//     string Customer_Password[elements];//å¯†ç¢¼
-//     long long int Holding_Stock_Numbers[elements];//æŒæœ‰è‚¡ç¥¨æ•¸é‡
-//     string Holding_Stock_Name[elements];//æŒæœ‰è‚¡ç¥¨åç¨±
-//     string Holding_Stock_code[elements];//æŒæœ‰è‚¡ç¥¨ä»£ç¢¼
-//     double Balance;//ç¾é‡‘é¤˜é¡
-//     double Total_Assets;//ç¸½è³‡ç”¢
-//     bool Administrator;//æ˜¯å¦ç‚ºç®¡ç†å“¡
-
-// public:
-//     void Log_In();//ç™»éŒ„
-//     void Register();//è¨»å†Š
-
-// };
-
-class UI
-{
-public:
-    void Menu();//é¸æ“‡èœå–®
-};
 
 void readFile()
 {
-    int update;//æ›´æ–°æ¬¡æ•¸
-    double issuePrice, listedPrice, marketValue;//ç™¼è¡Œåƒ¹ ä¸Šå¸‚åƒ¹ å¸‚å€¼
-    string name, code;//åå­ ä»£ç¢¼
-    int hang;//æ›èµ·
-    long long listedNumber, shareVolume, floatNumber;//ä¸Šå¸‚è‚¡ç¥¨æ•¸ è‚¡ç¥¨æˆäº¤é‡ è‡ªç”±æµé€šè‚¡ä»½
+    int update;//§ó·s¦¸¼Æ
+    double issuePrice, listedPrice, marketValue, opening, closing, current;//µo¦æ»ù ¤W¥«»ù ¥«­È ¶}½L ¦¬½L ¶R½æ»ù
+    string name, code;//¦W¤l ¥N½X
+    long long floatNumber, shareVolume;// ªÑ²¼¦¨¥æ¶q ¦Û¥Ñ¬y³qªÑ¥÷
 
     ifstream stockData;
     for (int i=0; i<TOTALSTOCKS; i++)
@@ -142,19 +161,57 @@ void readFile()
             cout <<"Unable to open: "<< "stockData" << STOCKNAME[i] << endl;
         }
         else {
-            while (stockData >> name)//åè¦†è®€å…¥ç›´åˆ°è®€åˆ°æœ€å¾Œ(æœ€æ–°)çš„ä¸€è¡Œè³‡æ–™
+            while (stockData >> name)//¤ÏÂĞÅª¤Jª½¨ìÅª¨ì³Ì«á(³Ì·s)ªº¤@¦æ¸ê®Æ
             {
-                stockData >> code >> update >> issuePrice >> listedPrice >> marketValue >> hang >> listedNumber >> floatNumber >> shareVolume;
+                stockData >> code >> update >> issuePrice >> listedPrice >> marketValue >> floatNumber >> shareVolume >> opening >> closing >> current;
             }
-            Enterprise[i].setEverything(name, code, update, issuePrice, listedPrice, marketValue, hang, listedNumber, floatNumber, shareVolume);
+            Enterprise[i].setEverything(name, code, update, issuePrice, listedPrice, marketValue, floatNumber, shareVolume, opening, closing, current);
         }
         stockData.close();
     }
 }
 
+void Display_Stock_Market_Information(int opt)
+{
+    if (opt == -1)//all info
+    {
+        cout << "ªÑ²¼¦WºÙ/¥N½X" << " ªÑ²¼µo¦æ»ù ªÑ²¼¤W¥«»ù ¥«­È ¬y³qªÑ¥÷¶q ¦¨¥æ¶q ¶}½L»ù ¦¬½L»ù ¥Ø«e¶R½æ»ù®æ" << endl;
+        cout << "------------------------------------------------------------------------------------" << endl << endl;
+        for (int i=0; i<TOTALSTOCKS; i++)
+        {
+            cout << i+1 << ". ";
+            cout << Enterprise[i].Stock_Name << "  " << Enterprise[i].Stock_Code << " " << Enterprise[i].Stock_Issue_Price << "         " << Enterprise[i].Stock_Listed_Price << "\t    "
+                 << Enterprise[i].Market_Value << "  " << Enterprise[i].Free_Stocks_Float << "        " << Enterprise[i].The_Share_Volume_Of_Stocks << "    "
+                 << Enterprise[i].openingPrice << "     " << Enterprise[i].closingPrice << "     " << Enterprise[i].currentPrice << endl;
+        }
+
+    }
+}
+
+void menu()
+{
+    int option;
+    cout << "½Ğ¿é¤J¿ï¶µ¸¹½X" << endl;
+    cout << "---------------------------" << endl;
+    cout << "1.Åã¥Ü©Ò¦³ªÑ²¼¸ê°T" << endl;
+    cout << "2.Åã¥Ü¯S©wªÑ²¼¸ê°T" << endl;
+    cout << "---------------------------" << endl;
+    cin >> option;
+
+    switch (option)
+    {
+    case 1:
+        Display_Stock_Market_Information(-1);
+        break;
+
+    default:
+        break;
+    }
+}
+
+
 int main()
 {
     readFile();
-    get();//for test
-    Write_File();// testing write file function    
+    menu();
 }
