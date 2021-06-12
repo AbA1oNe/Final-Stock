@@ -1,16 +1,18 @@
-/* 股票交易系統--源代碼及關鍵源代碼註解如下：*/
 #include <iostream>
 #include <cstring>
 #include <conio.h>//getch()
 #include <fstream>
 #include <iomanip>
 #include <ctime>
+#include<string>
+#include<vector>
 //#define TOTALSTOCKS 5
 using namespace std;
 
 const int TOTALSTOCKS = 10;//設定有放幾個股票的資料
 int Num_Of_Stock;//現有股票種類數量，計數用
 int flag;
+vector <string> enterprise = {"A","B","C","D","E","F","G","H","I","J"};
 
 class Customer;
 
@@ -70,7 +72,7 @@ public:
     ......等
     )
     */
-    void setEverything(string, string, int, double, double, double, long long, long long, long long, long long, long long);
+    void setEverything(char*, char*, int, double, double, double, long long, long long, long long, long long, long long);
     friend void Write_File();//寫檔
     //以下為拿private data
     string getStock_Name()
@@ -92,11 +94,13 @@ public:
     double randomChange();//隨時間改變目前的價格
 };
 
-/*void Stock::setEverything(string name, string code, int update, double issue, double listed, double market, long long floatStock, long long shareVolume, long long opening, long long closing, long long current)
+void Stock::setEverything(char* name, char* code, int update, double issue, double listed, double market, long long floatStock, long long shareVolume, long long opening, long long closing, long long current)
 {
     //設定class的private data
-    this->Stock_Name = name;
-    this->Stock_Code = code;
+    strcpy(this->Stock_Name,name);
+    //this->Stock_Name = name;
+    strcpy(this->Stock_Code,code);
+    //this->Stock_Code = code;
     this->updateTimes = update;
     this->Stock_Issue_Price = issue;
     this->Stock_Listed_Price = listed;
@@ -106,7 +110,7 @@ public:
     this->openingPrice = opening;
     this->closingPrice = closing;
     this->currentPrice = current;
-}*/
+}
 //--------------------------------------------------------------------到這喔
 
 class Customer
@@ -585,6 +589,7 @@ start:
             }
         }
         case '8'://查看信息
+            cout<<"test";
             system("cls");
             cout << "\t\t\t******************************股票系統******************************" << endl;
             cout << "\t\t\t--------------------------------------------------------------------" << endl;
@@ -654,8 +659,8 @@ void Stock::Switch_choice()
         system("cls");
         cout << "\n\n\t\t***************股票交易市場**************" << endl;
         cout << "\t\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~`~~~~~~~~~~~~~~~~" << endl;
-        cout << " 公司\t\t代碼\t流通股\t可動股\t發行價\t上市價\t狀態" << endl;
-        cout << " 公司名稱\t\t代碼\t流通股\t\t可動股\t\t發行價\t\t上市價\t\t狀態" << endl;
+        //cout << " 公司\t\t代碼\t流通股\t可動股\t發行價\t上市價\t狀態" << endl;
+        cout << " 公司名稱\t代碼\t\t流通股\t\t可動股\t\t\t發行價\t\t上市價\t\t狀態" << endl;
         for(int i=0; i < TOTALSTOCKS; i++)
         {
             share[i].Display_Stock_Market_Information();//顯示市場信息
@@ -764,6 +769,34 @@ void Stock::Display_Stock_Market_Information()
          << "\t\t" << (Close_Selling == 0?"未停券":"已停券") << endl;
 }
 
+void readFile()
+{
+    int update;//更新次數
+    double issuePrice, listedPrice, marketValue, opening, closing, current;//發行價 上市價 市值 開盤 收盤 買賣價
+    string name, code;//名子 代碼
+    long long floatNumber, shareVolume;// 股票成交量 自由流通股份
+    ifstream stockData;
+    for (int i=0; i<TOTALSTOCKS; i++)
+    {
+        stockData.open("stockData" + enterprise[i] + ".txt");
+        if (!stockData)
+        {
+            cout <<"Unable to open: "<< "stockData" << enterprise[i] << endl;
+        }
+        else {
+            while (stockData >> name)//反覆讀入直到讀到最後(最新)的一行資料
+            {
+                stockData >> code >> update >> issuePrice >> listedPrice >> marketValue
+                >> floatNumber >> shareVolume >> opening >> closing >> current;
+            }
+            char Name[20], Code[6];
+            strcpy(Name,name.c_str());
+            strcpy(Code,code.c_str());
+            share[i].setEverything(Name, Code, update, issuePrice, listedPrice, marketValue, floatNumber, shareVolume, opening, closing, current);
+        }
+        stockData.close();
+    }
+}
 /*
 void Write_File()//因為未來預計要做折線圖，所以用ios::app讓每一次的更新都可以被記錄下來
 {
@@ -786,14 +819,12 @@ void Write_File()//因為未來預計要做折線圖，所以用ios::app讓每�
         stockData.close();
     }
 }
-
 void readFile()
 {
     int update;//更新次數
     double issuePrice, listedPrice, marketValue, opening, closing, current;//發行價 上市價 市值 開盤 收盤 買賣價
     string name, code;//名子 代碼
     long long floatNumber, shareVolume;// 股票成交量 自由流通股份
-
     ifstream stockData;
     for (int i=0; i<TOTALSTOCKS; i++)
     {
@@ -812,7 +843,6 @@ void readFile()
         stockData.close();
     }
 }
-
 void Display_Stock_Market_Information(int opt)
 {
     if (opt == -1)//all info
@@ -826,10 +856,8 @@ void Display_Stock_Market_Information(int opt)
                  << Enterprise[i].Market_Value << "  " << Enterprise[i].Free_Stocks_Float << "        " << Enterprise[i].The_Share_Volume_Of_Stocks << "    "
                  << Enterprise[i].openingPrice << "     " << Enterprise[i].closingPrice << "     " << Enterprise[i].currentPrice << endl;
         }
-
     }
 }
-
 void menu()
 {
     int option;
@@ -839,13 +867,11 @@ void menu()
     cout << "2.顯示特定股票資訊" << endl;
     cout << "---------------------------" << endl;
     cin >> option;
-
     switch (option)
     {
     case 1:
         Display_Stock_Market_Information(-1);
         break;
-
     default:
         break;
     }
@@ -1061,5 +1087,6 @@ int main()
     Stock temp;
     ifstream dataFile("Stock_File.txt"); //讀取股票數據
     dataFile.read((char*)(&share),sizeof(share));
+    readFile();
     temp.Interface();
 }
