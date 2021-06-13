@@ -1,15 +1,15 @@
-/* 股票交易系統--源代碼及關鍵源代碼註解如下：*/
 #include <iostream>
 #include <cstring>
 #include <conio.h>//getch()
 #include <fstream>
 #include <iomanip>
+#include <vector>
 #include <ctime>
 //#define TOTALSTOCKS 5
 using namespace std;
 
 const int TOTALSTOCKS = 10;//設定有放幾個股票的資料
-int Num_Of_Stock;//現有股票種類數量，計數用
+//int Num_Of_Stock;//現有股票種類數量，計數用
 int flag;
 
 class Customer;
@@ -18,14 +18,12 @@ class Stock
 {
     friend class Customer;
 private:
-    int updateTimes;                 //更新次數    //未來折線圖使用 //未做
-    unsigned long Stock_Volume;    //股票總股數   //10位正整數 //0 到 4,294,967,295 //1張1000股
-    unsigned long Free_Stocks_Float;//自由流通股份 //10位正整數 //0 到 4,294,967,295 //1張1000股
+    unsigned long long Stock_Volume;    //股票總股數   //10位正整數 //0 到 4,294,967,295 //1張1000股
+    unsigned long long Free_Stocks_Float;//自由流通股份 //10位正整數 //0 到 4,294,967,295 //1張1000股
     //如果是unsigned long long 是 0 到 18,446,744,073,709,551,615
     long long int The_Share_Volume_Of_Stocks;//股票成交量 //未做
-    char Stock_Name[20];            //股票名稱     //可以限字數
-    char Stock_Code[6];             //股票代碼     //可以限字數
-    char choice;                    //用來在Interface()輸入選擇
+    string Stock_Name;            //股票名稱     //可以限字數
+    string Stock_Code;             //股票代碼     //可以限字數
     double Stock_Issue_Price;       //股票發行價
     double Stock_Listed_Price;      //股票上市價
     double Market_Value;            //股票市值         //未做
@@ -34,30 +32,31 @@ private:
     double currentPrice;            //買賣價       //未做
     bool Close_Selling;             //是否暫停交易證券（1為是，0為否）//原本可以融券的股票，暫時不能再以融券賣出。//Short_Selling_Suspended
 public:
-    Stock()
+    Stock(string name = "", string code = "", unsigned long long volume = 0,unsigned long long freefloat = 0, double issuePrice = 0, double listedPrice = 0, double value = 0, double openPrice = 0, double closePrice = 0, double currentPrice = 0, bool close = 0)
     {
-        Num_Of_Stock = 0;//現有股票種類數量，計數用
+        //Num_Of_Stock = 0;//現有股票種類數量，計數用
+        Stock_Name = name;
+        Stock_Code = code;
+        Stock_Volume = volume;
         Free_Stocks_Float = Stock_Volume;//初始自由流通股份
-        updateTimes = 0;
-        Stock_Issue_Price = 0;
-        Stock_Listed_Price = 0;
-        Market_Value = 0;
-        Free_Stocks_Float = 0;
-        The_Share_Volume_Of_Stocks = 0;
-        openingPrice = 0;
-        closingPrice = 0;
-        currentPrice = 0;
+        Stock_Issue_Price = issuePrice;
+        Stock_Listed_Price = listedPrice;
+        Market_Value = value;
+        openingPrice = openPrice;
+        closingPrice = closePrice;
+        currentPrice = currentPrice;
+        Close_Selling = close;
     }
-    void Close_Selling_Stock(); //暫停股票交易
-    void Start_Selling_Stock(); //恢復股票交易
-    void Modify_Stock(Stock []);//修改股票資料(管理員)
+    void Close_Selling_Stock(vector <Stock>); //暫停股票交易
+    void Start_Selling_Stock(vector <Stock>); //恢復股票交易
+    void Modify_Stock(vector <Stock>);//修改股票資料(管理員)
     void Delete_Stock();        //刪除股票(管理員)
     void Add_New_Stock();       //加入新股票(管理員)
-    void Interface();           //介面選單
+    
     void Display_Stock_Market_Information();//顯示信息
-    void Switch_choice();       //功能選擇
+    friend void Switch_choice();       //功能選擇
     void Market_Analysis();     //市場分析
-    void Save(Stock[]);         //保存修改
+    friend void Save(vector <Stock>);         //保存修改
 //-----------------------------------------------------------------到111未用
     friend void Display_Stock_Market_Information(int );//receive option number+1 if -1, then it's display all info
     /*展示各項股市信息
@@ -78,7 +77,6 @@ public:
         return this -> Stock_Name;
     }
     string getStock_Code();
-    int getUpdateTimes();
     double getStock_Issue_Price();
     double getStock_Listed_Price();
     double getMarket_Value();
@@ -109,15 +107,18 @@ public:
 }*/
 //--------------------------------------------------------------------到這喔
 
+void Interface(vector <Stock>);//介面選單
+void Switch_choice(vector <Stock>);
+
 class Customer
 {
     friend class Stock;
 private:
     unsigned long int share_holding_value[5];//持有股票數量
-    char Customer_Name[30];//用戶名
-    char Customer_Password[10];//密碼
-    char share_holding_name[5][30];//持有股票名稱
-    char share_holding_code[5][5];//持有股票代碼
+    string Customer_Name;//用戶名
+    string Customer_Password;//密碼
+    string share_holding_name[10];//持有股票名稱
+    string share_holding_code[10];//持有股票代碼
 
     double Balance;//現金餘額
     double Holding_Market_Value;//持有股票市值
@@ -126,18 +127,18 @@ private:
 public:
     Customer()
     {
-        strcpy(Customer::Customer_Name,"");
+        Customer_Name = "";
         for(int i=0; i < TOTALSTOCKS; i++)
         {
-            strcpy(Customer::share_holding_name[i],"");
-            strcpy(Customer::share_holding_code[i],"");
+            share_holding_name[i] = "";
+            share_holding_code[i] = "";
             share_holding_value[i] = 0;
             Balance = Holding_Market_Value = Total_Assets = 0;
         }
     }
-    void Log_In(char *) const;//登錄
+    void Log_In(string, vector <Stock>) const;//登錄
     void Register(Customer *);//註冊
-    void Stock_Portfolio() const; // Portfolio--有價證券
+    void Stock_Portfolio(vector <Stock>) const; // Portfolio--有價證券
     //----------------------------------------------------------------------------------到151未做
     /*
     void buy();//買
@@ -151,15 +152,15 @@ public:
     */
     //-----------------------------------------------------------------------------------到這裡喔
 };
-Stock temp,share[TOTALSTOCKS];//全局變量，聲明股票對象
+Stock temp;//全局變量，聲明股票對象
 Customer cust;//聲明用戶對象，全局變量
 
 
-void Customer::Log_In(char *pass_word) const//登錄
+void Customer::Log_In(string pass_word, vector <Stock> share) const//登錄
 {
-    if( strcmp(pass_word,Customer_Password) == 0 )//核對密碼
+    if( pass_word == Customer_Password )//核對密碼
     {
-        Stock_Portfolio();
+        Stock_Portfolio(share);
     }
     else
     {
@@ -176,22 +177,16 @@ void Customer::Register(Customer *cust)//註冊帳號
     cout << "歡迎進入---------------股票系統---------------" << endl;
     cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << endl;
     cout << "請輸入帳號/用戶名: ";
-    cin.getline(Customer_Name,30);
-    cout << "請輸入密碼(限定字數?少於8 字): " << endl;
+    cin >> Customer_Name;
+    cout << "請輸入密碼(少於8字): " << endl;
+    cin >> Customer_Password;
+    while (Customer_Password.size() <= 0 || Customer_Password.size() > 8)
     {
-        char input;
-        int i=0;
-        cout.flush();
-        input = getch();
-        while(input != 13)
-        {
-            Customer_Password[i++] = input;
-            cout << '*';
-            cout.flush();
-            input = getch();
-        }
-        Customer_Password[i]=0;
+        cout << "輸入錯誤" << endl;
+        cout << "請輸入密碼(少於8字): " << endl;
+        cin >> Customer_Password;
     }
+
     cout << endl;
     cout << "輸入您的初始資金:";
     cin >> Total_Assets;
@@ -220,10 +215,11 @@ void Customer::Register(Customer *cust)//註冊帳號
     getch();
 }
 
-void Customer::Stock_Portfolio() const//用戶交易操作介面系統
+void Customer::Stock_Portfolio(vector <Stock> share) const//用戶交易操作介面系統
 {
     int i,a;
-    char input, share_code[6], str[20];
+    char input;
+    string code;
     long int volume;
 start:
     system("cls");
@@ -233,18 +229,16 @@ start:
     cout << "\t\t 用戶: " << cust.Customer_Name << endl << endl;
     cout << "\t\t 買入..........................[1]" << endl;
     cout << "\t\t 賣出..........................[2]" << endl;
-    cout << "\t\t 添加新股票....................[3]" << endl;
-    cout << "\t\t 刪除已有股....................[4]" << endl;
-    cout << "\t\t 恢復股票交易..................[5]" << endl;
-    cout << "\t\t 暫停股票交易..................[6]" << endl;
-    cout << "\t\t 修改股票代碼及名稱............[7]" << endl;//可以再新增要修改的
-    cout << "\t\t 查看股市資訊..................[8]" << endl;
+    cout << "\t\t 恢復股票交易..................[3]" << endl;
+    cout << "\t\t 暫停股票交易..................[4]" << endl;
+    cout << "\t\t 修改股票代碼及名稱............[5]" << endl;//可以再新增要修改的
+    cout << "\t\t 查看股市資訊..................[6]" << endl;
     cout << "\t\t 退出帳號......................[0]" << endl;
     cout << endl << "\t\t 輸入功能選項: ";
 
     cin >> input;
 
-    if( (input>'8') || (input<'0') )
+    if( (input>'6') || (input<'0') )
         goto start;
     else
     {
@@ -252,7 +246,7 @@ start:
         {
         case '0'://返回主頁面
         {
-            temp.Interface();
+            Interface(share);
         }
         case '1': //買入
         {
@@ -271,14 +265,22 @@ start:
                  << "\t\t" << cust.Total_Assets << endl;
             cin.get();
             cout << endl << "輸入您要購買的股票代碼:";
-            cin.getline(share_code,6);
-            if( strcmp(share_code,"") != 0 )//當輸入回車時報錯
+            cin >> code;
+
+            while (code.size() > 5 || code.size() <= 0)
+            {
+                cout << "股票代碼應不大於5碼或至少有1碼" << endl;
+                cout << "輸入您要購買的股票代碼:";
+                cin >> code;
+            }
+            
+            if( code != "" )//當輸入回車時報錯
             {
                 int i = 0;
                 flag = 0;
                 while( (i < TOTALSTOCKS) && (!flag) )
                 {
-                    if ( strcmp(share[i].Stock_Code,share_code) == 0)
+                    if ( code == share[i].Stock_Code)
                     {
                         if( share[i].Close_Selling == 1 )
                         {
@@ -295,8 +297,6 @@ start:
                             cin >> volume;
                             while(volume != (int)volume)//判斷輸入是否為整數
                             {
-                                cin.clear();
-                                cin.getline(str,20);
                                 cout<<"輸入錯誤,請重新輸入(整數)"<<endl;
                                 cin >> volume;
                             }
@@ -304,8 +304,9 @@ start:
                             {
                                 //改動各數據
                                 cust.share_holding_value[i] += volume;
-                                strncpy(cust.share_holding_name[i],share[i].Stock_Name,30);
-                                strcpy(cust.share_holding_code[i],share[i]. Stock_Code);
+                                cust.share_holding_name[i] = share[i].Stock_Name;
+                                cust.share_holding_code[i] = share[i].Stock_Code;
+                                
                                 share[i].Free_Stocks_Float -= volume;
                                 cust.Balance -= share[i].Stock_Listed_Price*volume;
                                 cust.Holding_Market_Value += share[i].Stock_Listed_Price*volume;
@@ -332,7 +333,7 @@ start:
                                 cin.get();
                                 ofstream dataFile (cust.Customer_Name,ios::binary);
                                 dataFile.write((char*)(&cust),sizeof(cust));
-                                temp.Save(share);
+                                Save(share);
                             }
                             else if(share[i].Free_Stocks_Float <= volume)
                             {
@@ -376,7 +377,7 @@ start:
             cin.get();
             break;
         }
-        case '2 ':
+        case '2':
         {
             //賣出股票
             system("cls");
@@ -398,14 +399,21 @@ start:
             cout << cust.Holding_Market_Value << "\t\t" << cust.Balance << "\t\t" << cust. Total_Assets << endl;
             cin.get();
             cout << endl << "輸入賣初股票代碼: ";
-            cin.getline(share_code,6);
-            if(strcmp(share_code,"") != 0)
+            code = "";
+            while (code.size() > 6 || code.size() <= 0)
+            {
+                cout << "股票代碼應不大於6碼或至少有1碼" << endl;
+                cout << "輸入您要購買的股票代碼:";
+                cin >> code;
+            }
+
+            if(code != "")
             {
                 i = 0;
                 flag = 0;
                 while( (i<TOTALSTOCKS) && (!flag) )
                 {
-                    if( strcmp(share[i].Stock_Code,share_code) == 0 )
+                    if( share[i].Stock_Code == code )
                     {
                         if( share[i].Close_Selling == 1 )
                         {
@@ -417,11 +425,9 @@ start:
                             flag = 1;
                             cout << "輸入賣出量: ";
                             cin >> volume;
-                            while(volume != (int)volume)
+                            while(volume != (int)volume)//判斷輸入是否為整數
                             {
-                                cin.clear();
-                                cin.getline(str,20);
-                                cout << "輸入錯誤,請重新輸入(整數)" << endl;
+                                cout<<"輸入錯誤,請重新輸入(整數)"<<endl;
                                 cin >> volume;
                             }
                             if(cust.share_holding_value[i] >= volume)
@@ -435,7 +441,7 @@ start:
                                 cout << endl;
                                 ofstream data(cust.Customer_Name,ios::binary);
                                 data.write((char*)(&cust),sizeof(cust));
-                                temp.Save(share);
+                                Save(share);
                             }
                             else
                             {
@@ -469,53 +475,7 @@ start:
             cin.get();
             break;
         }
-        case '3'://加入新股票
-        {
-            if( cust.Administrator == 1 )
-            {
-                for(i=0; i<TOTALSTOCKS; i++)
-                {
-                    if( strcmp(share[i].Stock_Name, "") == 0 )//在股票數據空白處添加內容
-                    {
-                        share[i].Add_New_Stock();
-                        temp.Save(share);//填寫數據
-                        getch();
-                        goto start;
-                    }
-                }
-            }
-            else
-            {
-                cout << "您無權限添加新股票!" << endl;
-                getch();
-                break;
-            }
-        }
-        case '4'://刪除股票
-        {
-            if( cust.Administrator == 1 )
-            {
-                system("cls") ;
-                cout << "\t\t\t------------------------------股票系統------------------------------" << endl;
-                cout << "\t\t\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << endl;
-                cout << " 公司名稱\t\t代碼\t流通股\t\t可動股\t\t發行價\t\t上市價\t\t狀態" << endl;
-                for(int i=0; i < TOTALSTOCKS; i++)
-                {
-                    share[i].Display_Stock_Market_Information();//顯示市場信息
-                }
-                cin.get();
-                temp.Delete_Stock();
-                cin.get();
-                break;
-            }
-            else
-            {
-                cout << "您無權限刪除舊股票" << endl;
-                getch();
-                break;
-            }
-        }
-        case '5'://恢復股票交易
+        case '3'://恢復股票交易
         {
             if(cust.Administrator == 1)
             {
@@ -528,7 +488,7 @@ start:
                     share[i].Display_Stock_Market_Information();//顯示市場信息
                 }
                 cin.get();
-                temp.Start_Selling_Stock();
+                temp.Start_Selling_Stock(share);
                 break;
             }
             else
@@ -538,7 +498,7 @@ start:
                 break;
             }
         }
-        case '6'://停券股票
+        case '4'://停券股票
         {
             if( cust.Administrator == 1 )
             {
@@ -551,7 +511,7 @@ start:
                     share[i].Display_Stock_Market_Information();//顯示市場信息
                 }
                 cin.get();
-                temp.Close_Selling_Stock();//進行
+                temp.Close_Selling_Stock(share);//進行
                 break;
             }
             else
@@ -561,7 +521,7 @@ start:
                 break;
             }
         }
-        case '7'://修改股票
+        case '5'://修改股票
         {
             if( cust.Administrator == 1 )
             {
@@ -584,7 +544,7 @@ start:
                 break ;
             }
         }
-        case '8'://查看信息
+        case '6'://查看信息
             system("cls");
             cout << "\t\t\t******************************股票系統******************************" << endl;
             cout << "\t\t\t--------------------------------------------------------------------" << endl;
@@ -612,8 +572,9 @@ start:
     }
 }
 
-void Stock::Interface()
+void Interface(vector <Stock> share)
 {
+    char choice;
     system("cls");
     cout << "***************股票交易系統***************" << endl;
     cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << endl;
@@ -630,15 +591,16 @@ void Stock::Interface()
     case '2':
     case '3':
     case '0':
-        Switch_choice();
+        Switch_choice(share);
     default:
         system("cls");
-        temp.Interface();
+        Interface(share);
     }
 }
 
-void Stock::Switch_choice()
+void Switch_choice(vector <Stock> share)
 {
+    char choice;
     char pass_word[10];
     switch(choice)
     {
@@ -662,7 +624,7 @@ void Stock::Switch_choice()
         }
         cin.get();
         getch();
-        temp.Interface();
+        Interface(share);
         break;
     }
     case '2'://登陸用戶
@@ -682,7 +644,7 @@ void Stock::Switch_choice()
                 cout << endl;
                 cout << "資料庫沒有記錄" << endl;
                 getch();
-                temp.Interface();
+                Interface(share);
             }
             else
             {
@@ -702,9 +664,9 @@ void Stock::Switch_choice()
                 pass_word[i] = 0;
                 if( strcmp(pass_word,"") != 0 )
                 {
-                    cust.Log_In(pass_word);
+                    cust.Log_In(pass_word, share);
                     cin.get();
-                    temp.Interface();
+                    Interface(share);
                     break;
                 }
                 else
@@ -726,7 +688,7 @@ void Stock::Switch_choice()
         ofstream write_customer(cust.Customer_Name);
         write_customer.write((char*)&cust,sizeof(cust));
         write_customer.close();
-        temp.Interface();
+        Interface(share);
         break;
     }
     default:
@@ -734,14 +696,28 @@ void Stock::Switch_choice()
     }
 }
 
-void Stock::Add_New_Stock()//添加新股票
+/*void Stock::Add_New_Stock()//添加新股票
 {
+    string name = "", code = "";
     system("cls");
     cin.get();
     cout << "輸入新股票名(字數要限制): ";
-    cin.getline(Stock_Name,20);
+    cin >> name;
+
+    while (name.size() > 20 || name.size() <= 0)
+    {
+        cout << "股票名稱應不大於20碼或至少有1碼" << endl;
+        cout << "輸入您要購買的股票名稱:";
+        cin >> name;
+    }
     cout << "輸入股票代碼(五個以內): ";
-    cin.getline(Stock_Code,6);
+    cin >> code;
+    while (code.size() > 5 || code.size() <= 0)
+    {
+        cout << "股票代碼應不大於5碼或至少有1碼" << endl;
+        cout << "輸入您要購買的股票代碼:";
+        cin >> code;
+    }
     cout << "輸入流通股票數量: ";
     cin >> Stock_Volume;
     cout << "輸入股票發行價: ";
@@ -751,7 +727,7 @@ void Stock::Add_New_Stock()//添加新股票
     Num_Of_Stock++;
     srand(time(NULL));//隨機生成股票上市價
     Stock_Listed_Price = (rand()%3+1)*Stock_Issue_Price + rand()%1000/10;//亂數調整
-}
+}*/
 
 void Stock::Display_Stock_Market_Information()
 {
@@ -851,18 +827,25 @@ void menu()
     }
 }
 */
-void Stock::Close_Selling_Stock()//暫停股票交易
+void Stock::Close_Selling_Stock(vector <Stock> share)//暫停股票交易
 {
-    char share_code[6], input;
+    char input;
+    string share_code = "";
     cout<<"輸入您要停券的股票代碼:";
-    cin.getline(share_code,6);
+    cin >> share_code;
+    while (share_code.size() > 5 || share_code.size() <= 0)
+    {
+        cout << "股票代碼應不大於5碼或至少有1碼" << endl;
+        cout << "輸入您要購買的股票代碼:";
+        cin >> share_code;
+    }
     int i=0;
     flag = 0;
-    if( strcmp(share_code,"") != 0 )//當輸入回車時報錯
+    if( share_code != "")//當輸入回車時報錯
     {
         while( (i<TOTALSTOCKS) && (!flag) )
         {
-            if(strcmp(share[i].Stock_Code,share_code) == 0)
+            if(share[i].Stock_Code == share_code)
             {
                 flag = 1;
                 cout << "確定(y/n)";
@@ -870,7 +853,7 @@ void Stock::Close_Selling_Stock()//暫停股票交易
                 if(input == 'y')
                 {
                     share[i].Close_Selling = 1;
-                    temp.Save(share);
+                    Save(share);
                     cout << "已停券" << endl;
                     cout << endl;
                     break;
@@ -895,16 +878,23 @@ void Stock::Close_Selling_Stock()//暫停股票交易
     getch();
 }
 
-void Stock::Start_Selling_Stock()//恢復股票交易
+void Stock::Start_Selling_Stock(vector <Stock> share)//恢復股票交易
 {
-    char share_code[6], input;
+    char input;
+    string share_code = "";
     cout << "輸入您要恢復交易的股票代碼:";
-    cin.getline(share_code,6);
+    cin >> share_code;
+    while (share_code.size() > 5 || share_code.size() <= 0)
+    {
+        cout << "股票代碼應不大於5碼或至少有1碼" << endl;
+        cout << "輸入您要恢復交易的股票代碼:";
+        cin >> share_code;
+    }
     int i= 0;
     flag = 0;
     while( (!flag) && (i<TOTALSTOCKS) )
     {
-        if( strcmp(share[i].Stock_Code,share_code) == 0 )
+        if( share[i].Stock_Code == share_code )
         {
             flag = 1;
             cout << "確定(y/n)";
@@ -912,7 +902,7 @@ void Stock::Start_Selling_Stock()//恢復股票交易
             if(input == 'y')
             {
                 share[i].Close_Selling = 0;
-                temp.Save(share);
+                Save(share);
                 cout << "已恢復" << endl;
                 cout << endl;
                 break;
@@ -936,7 +926,7 @@ void Stock::Start_Selling_Stock()//恢復股票交易
     getch();
 }
 
-void Stock::Delete_Stock()//刪除股票
+/*void Stock::Delete_Stock()//刪除股票
 {
     char input,share_code[6];
     cout << "輸入刪除股票代碼:";
@@ -992,22 +982,27 @@ void Stock::Delete_Stock()//刪除股票
     {
         cout<<"輸入錯誤!";
     }
-}
+}*/
 
-void Stock::Modify_Stock(Stock t[])//調整資訊
+void Stock::Modify_Stock(vector <Stock> t)//調整資訊
 {
     flag = 0;
     int i=0;
-    char share_code[6];
-    char share_name[6];
+    string share_name = "", share_code = "";
     cin.clear();
     cout << "輸入原公司代碼" << endl;
-    cin.getline(share_code,6);
-    if( strcmp(share_code,"") != 0 )//當輸入回車鍵時報錯
+    cin >> share_code;
+    while (share_code.size() > 5 || share_code.size() <= 0)
+    {
+        cout << "股票代碼應不大於5碼或至少有1碼" << endl;
+        cout << "輸入您要恢復交易的股票代碼:";
+        cin >> share_code;
+    }
+    if( share_code != "" )//當輸入回車鍵時報錯
     {
         while( (i < TOTALSTOCKS) && (!flag) )
         {
-            if (strcmp(t[i].Stock_Code,share_code) == 0)
+            if (t[i].Stock_Code == share_code)
             {
                 if(t[i].Close_Selling == 1)
                 {
@@ -1019,14 +1014,26 @@ void Stock::Modify_Stock(Stock t[])//調整資訊
                     cin.clear();
                     flag = 1;
                     cout << "輸入新股名(忘了多少以內):" << endl;
-                    cin.getline(share_name,7);
-                    strcpy(t[i].Stock_Name,share_name);
+                    cin >> share_name;
+                    while (share_name.size() > 20 || share_name.size() <= 0)
+                    {
+                        cout << "股票名稱應不大於20碼或至少有1碼" << endl;
+                        cout << "輸入您要購買的股票名稱:";
+                        cin >> share_name;
+                    }
+                    t[i].Stock_Name = share_name;
                     cin.get();
                     cout << "輸入新代碼(5以內)";
                     cout << endl;
-                    cin.getline(share_code,7);
-                    strcpy(t[i].Stock_Code,share_code);
-                    temp.Save(t);
+                    cin >> share_code;
+                    while (share_code.size() > 5 || share_code.size() <= 0)
+                    {
+                        cout << "股票代碼應不大於5碼或至少有1碼" << endl;
+                        cout << "輸入您要恢復交易的股票代碼:";
+                        cin >> share_code;
+                    }
+                    t[i].Stock_Code = share_code;
+                    Save(t);
                 }
             }
             else
@@ -1047,7 +1054,7 @@ void Stock::Modify_Stock(Stock t[])//調整資訊
     }
 }
 
-void Stock::Save(Stock t[])
+void Save(vector <Stock> t)
 {
     ofstream write_data("Stock_File.txt");
     for(int i=0; i < TOTALSTOCKS; i++)
@@ -1058,8 +1065,24 @@ void Stock::Save(Stock t[])
 
 int main()
 {
-    Stock temp;
     ifstream dataFile("Stock_File.txt"); //讀取股票數據
-    dataFile.read((char*)(&share),sizeof(share));
-    temp.Interface();
+    vector <Stock> share;
+
+    if (!dataFile)
+    {
+        cout << "Can not open Stock_file.txt" << endl;
+    }
+    else {
+        unsigned long long volume, freefloat;
+        string name, code;
+        double value, openPrice, closePrice, currentPrice, issuePrice, listedPrice;
+        bool close;
+        int i=0;
+        while (dataFile >> name >> code >> volume >> freefloat >> issuePrice >> listedPrice >> value >> openPrice >> closePrice >> currentPrice >> close)
+        {
+            Stock tmp(name, code, volume, freefloat, issuePrice, listedPrice, value, openPrice, closePrice, currentPrice, close);
+            share.push_back(tmp);
+        }
+    }
+    Interface(share);
 }
