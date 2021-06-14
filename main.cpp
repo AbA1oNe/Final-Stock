@@ -5,15 +5,19 @@
 #include <iomanip>
 #include <vector>
 #include <ctime>
-#include<string>
-#include<vector>
+#include <string>
+#include <vector>
+#include <thread>
+#include <windows.h>
+#include <cstdlib>
 //#define TOTALSTOCKS 5
 using namespace std;
 
 const int TOTALSTOCKS = 10;//設定有放幾個股票的資料
 //int Num_Of_Stock;//現有股票種類數量，計數用
 int flag;
-vector <string> enterprise = {"A","B","C","D","E","F","G","H","I","J"};
+int getTime();      //股票浮動之一Function
+double Random();    //股票浮動之一Function
 
 class Customer;
 
@@ -34,6 +38,7 @@ private:
     double closingPrice;            //收盤價       //未做
     double currentPrice;            //買賣價       //未做
     bool Close_Selling;             //是否暫停交易證券（1為是，0為否）//原本可以融券的股票，暫時不能再以融券賣出。//Short_Selling_Suspended
+    int color;                      //紅色1(跌), 綠色2(漲), 白色0(維持)
 public:
     Stock(string name = "", string code = "", unsigned long long volume = 0,unsigned long long freefloat = 0, double issuePrice = 0, double listedPrice = 0, double value = 0, double openPrice = 0, double closePrice = 0, double currentPrice = 0, bool close = 0)
     {
@@ -49,13 +54,14 @@ public:
         closingPrice = closePrice;
         currentPrice = currentPrice;
         Close_Selling = close;
+        color = 0;
     }
     void Close_Selling_Stock(vector <Stock>); //暫停股票交易
     void Start_Selling_Stock(vector <Stock>); //恢復股票交易
     void Modify_Stock(vector <Stock>);//修改股票資料(管理員)
     void Delete_Stock();        //刪除股票(管理員)
     void Add_New_Stock();       //加入新股票(管理員)
-    
+
     void Display_Stock_Market_Information();//顯示信息
     friend void Switch_choice();       //功能選擇
     void Market_Analysis();     //市場分析
@@ -90,7 +96,7 @@ public:
     double getPrice();
 
     bool checkFloat();//檢查浮動 如果漲則true
-    double randomChange();//隨時間改變目前的價格
+    void randomChange(vector <Stock>);//隨時間改變目前的價格
 };
 
 void Stock::setEverything(char* name, char* code, int update, double issue, double listed, double market, long long floatStock, long long shareVolume, long long opening, long long closing, long long current)
@@ -278,7 +284,7 @@ start:
                 cout << "輸入您要購買的股票代碼:";
                 cin >> code;
             }
-            
+
             if( code != "" )//當輸入回車時報錯
             {
                 int i = 0;
@@ -311,7 +317,7 @@ start:
                                 cust.share_holding_value[i] += volume;
                                 cust.share_holding_name[i] = share[i].Stock_Name;
                                 cust.share_holding_code[i] = share[i].Stock_Code;
-                                
+
                                 share[i].Free_Stocks_Float -= volume;
                                 cust.Balance -= share[i].Stock_Listed_Price*volume;
                                 cust.Holding_Market_Value += share[i].Stock_Listed_Price*volume;
@@ -1089,6 +1095,65 @@ void Save(vector <Stock> t)
     }
 }
 
+void Stock::randomChange(vector <Stock> share)
+{
+    int i = 0;
+    int lastTime = 0;
+    while (1) {
+        int now = getTime();
+        /*------ 每過30秒浮動--------*/
+        if (now - lastTime > 30) {
+            for(int j=0; j<share.size(); j++) {
+                double amount_of_increase = Random(); //浮動百分比
+
+                if(amount_of_increase == 0) {        //維持不動
+                    share[i].color = 0;
+                }
+                else if(amount_of_increase > 0) {       //上漲
+
+                    share[i].Stock_Listed_Price *= (1 + amount_of_increase);
+
+                    if(amount_of_increase == 0.1) {     //漲幅達10%
+                        share[i].color = 2;
+                        share[i].Close_Selling = 1;
+                    }
+                    else {                              //漲幅小於10%
+                       share[i].color = 2;
+                       share[i].Stock_Listed_Price *= (1 + amount_of_increase);
+                    }
+                }
+                else if(amount_of_increase < 0) {        //下跌
+
+                    share[i].Stock_Listed_Price *= (1 + amount_of_increase);
+
+                    if(amount_of_increase == -0.1) {    //下跌達10%
+                        share[i].color = 1;
+                        share[i].Close_Selling = 1;
+                    }
+                    else {                               //下跌小於10%
+                        share[i].color = 1;
+                    }
+                }
+            }
+            lastTime = now;
+        }
+    }
+}
+
+int getTime()
+{
+    return clock()/CLOCKS_PER_SEC;
+}
+
+double Random()
+{
+    srand(time(nullptr));
+    int Min = -10;
+    int Max = 10;
+    int x = rand() % (Max - Min + 1) + Min; // x的範圍[-10, 10]
+    return x*0.01; //換百分比
+}
+
 int main()
 {
     ifstream dataFile("Stock_File.txt"); //讀取股票數據
@@ -1110,5 +1175,7 @@ int main()
             share.push_back(tmp);
         }
     }
+    thread t1(&Stock::randomChange, &temp, share);  //多執行序，執行股票浮動
+    t1.detach();
     Interface(share);
 }
