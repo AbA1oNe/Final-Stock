@@ -63,7 +63,7 @@ public:
     void Add_New_Stock();       //加入新股票(管理員)
 
     void Display_Stock_Market_Information();//顯示信息
-    friend void Switch_choice();       //功能選擇
+    friend void Switch_choice(vector <Stock>, char);       //功能選擇
     void Market_Analysis();     //市場分析
     friend void Save(vector <Stock>);         //保存修改
 //-----------------------------------------------------------------到111未用
@@ -99,7 +99,7 @@ public:
     void randomChange(vector <Stock>);//隨時間改變目前的價格
 };
 
-void Stock::setEverything(char* name, char* code, int update, double issue, double listed, double market, long long floatStock, long long shareVolume, long long opening, long long closing, long long current)
+/*void Stock::setEverything(char* name, char* code, int update, double issue, double listed, double market, long long floatStock, long long shareVolume, long long opening, long long closing, long long current)
 {
     //設定class的private data
     strcpy(this->Stock_Name,name);
@@ -115,17 +115,16 @@ void Stock::setEverything(char* name, char* code, int update, double issue, doub
     this->openingPrice = opening;
     this->closingPrice = closing;
     this->currentPrice = current;
-}
+}*/
 //--------------------------------------------------------------------到這喔
 
 void Interface(vector <Stock>);//介面選單
-void Switch_choice(vector <Stock>);
 
 class Customer
 {
     friend class Stock;
 private:
-    unsigned long int share_holding_value[5];//持有股票數量
+    unsigned long int share_holding_value[10];//持有股票數量
     string Customer_Name;//用戶名
     string Customer_Password;//密碼
     string share_holding_name[10];//持有股票名稱
@@ -150,6 +149,7 @@ public:
     void Log_In(string, vector <Stock>) const;//登錄
     void Register(Customer *);//註冊
     void Stock_Portfolio(vector <Stock>) const; // Portfolio--有價證券
+    friend void Switch_choice(vector <Stock>, char);
     //----------------------------------------------------------------------------------到151未做
     /*
     void buy();//買
@@ -602,16 +602,15 @@ void Interface(vector <Stock> share)
     case '2':
     case '3':
     case '0':
-        Switch_choice(share);
+        Switch_choice(share, choice);
     default:
         system("cls");
         Interface(share);
     }
 }
 
-void Switch_choice(vector <Stock> share)
+void Switch_choice(vector <Stock> share, char choice)
 {
-    char choice;
     char pass_word[10];
     switch(choice)
     {
@@ -751,7 +750,7 @@ void Stock::Display_Stock_Market_Information()
          << "\t\t" << (Close_Selling == 0?"未停券":"已停券") << endl;
 }
 
-void readFile()
+/*void readFile()
 {
     int update;//更新次數
     double issuePrice, listedPrice, marketValue, opening, closing, current;//發行價 上市價 市值 開盤 收盤 買賣價
@@ -778,7 +777,7 @@ void readFile()
         }
         stockData.close();
     }
-}
+}*/
 /*
 void Write_File()//因為未來預計要做折線圖，所以用ios::app讓每一次的更新都可以被記錄下來
 {
