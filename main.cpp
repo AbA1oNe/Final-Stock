@@ -59,7 +59,7 @@ public:
 
     friend void Display_Stock_Market_Information(vector <Stock>, int);//��ܫH��
     void Switch_choice(vector <Stock>, char ,vector <Customer>);//�\����
-    friend void Save(vector <Stock>);         //�O�s�ק�
+    friend void StockWrite(vector <Stock>);
 };
 
 void Interface(vector <Stock>, vector <Customer>);
@@ -100,7 +100,7 @@ public:
         Administrator = Admin;
     }
     void Log_In(string, vector <Stock>, time_t) const;//�n��
-    void Register(Customer *);//���U
+    void Register(vector <Customer>);//���U
     friend void Display_Stock_Market_Information(vector <Stock>, int);
     void Stock_Portfolio(vector <Stock>, vector <Customer>, int ) const; // �����Ҩ�
     //friend void Switch_choice(vector <Stock>, char, time_t);
@@ -122,9 +122,52 @@ Customer cust;//�n���Τ��H�A�����ܶq
     }
 }*/
 
-void Customer::Register(Customer *cust)//���U
+void Customer::Register(vector <Customer> cus)//註冊
 {
+    string Name,Password;
+    double TotalAssets, Balbace;
     char input;
+    bool Admin;
+    ofstream WriteFile("Customer.txt",ios::app);
+    if(!WriteFile) {
+        cout<< "can't open the file" <<endl;
+    }
+    else {
+        cout << "Please enter your username: ";
+        cin >>Name;
+        cout << endl << "Please enter your password:";
+        cin >> Password;
+        cout << endl << "Please enter your starting money: ";
+        cin>> TotalAssets;
+        Balbace = TotalAssets;
+        cout << endl << "Administrator or not?(y/n)" << endl;
+        cin>> input;
+        if( (input == 'y') || (input == 'Y')) {
+            Admin = 1;
+            cout << "Set!";
+        }
+        else if( (input == 'n') || (input == 'N') ) {
+            Admin = 0;
+            cout << "Set!";
+        }
+        else {
+            cout << "Default as not a admin"<<endl;
+        }
+        WriteFile << endl << Name << ' ' << Password << ' ' << "|" << ' ' << "|" <<' ' << "|" << ' ' << Balbace << ' ' << 0 << ' '
+                    << TotalAssets << ' ' << Admin;
+        WriteFile.close();
+        vector <string> nothing;
+        vector <double> nothing1;
+        Customer t(Name, Password, nothing, nothing, nothing1, Balbace, 0, TotalAssets, Admin);
+        cus.push_back(t);
+        getch();
+        system("cls");
+        cout << "Done!"     << endl;
+        cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << endl;
+        cout << "Hit any key to return" << endl;
+        getch();
+    }
+    /*char input;
     system("cls");
     cin.get();
     cout << "Welcome to---------------The Stock System---------------" << endl;
@@ -145,7 +188,7 @@ void Customer::Register(Customer *cust)//���U
     cin >> Total_Assets;
     Holding_Market_Value = 0;
     Balance = Total_Assets;
-    cout << "Administrator or not?(y/n)" << endl;//�j�p�g����
+    cout << "Administrator or not?(y/n)" << endl;//大小寫都行
     cin >> input;
     if( (input == 'y') || (input == 'Y') )
     {
@@ -161,11 +204,11 @@ void Customer::Register(Customer *cust)//���U
         cout << "Default as not a admin";
     }
     getch();
-    system("cls");//�M��
+    system("cls");//清空
     cout << "Done!"     << endl;
     cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << endl;
     cout << "Hit any key to return" << endl;
-    getch();
+    getch();*/
 }
 
 void Customer::Stock_Portfolio(vector <Stock> share, vector <Customer> cus, int index) const//�Τ����ާ@�����t��
@@ -309,7 +352,7 @@ start:
                                 cin.get();
                                 ofstream dataFile (cust.Customer_Name,ios::binary);
                                 dataFile.write((char*)(&cust),sizeof(cust));
-                                Save(share);
+                                StockWrite(share);
                             }
                             else if(share[i].Free_Stocks_Float <= volume)
                             {
@@ -417,7 +460,7 @@ start:
                                 cout << endl;
                                 ofstream data(cust.Customer_Name,ios::binary);
                                 data.write((char*)(&cust),sizeof(cust));
-                                Save(share);
+                                StockWrite(share);
                             }
                             else
                             {
@@ -583,6 +626,7 @@ void Stock::Switch_choice(vector <Stock> share, char choice, vector <Customer> c
     {
         system("cls");
         cout << "Good Bye" << endl;
+        StockWrite(share);
         exit(0);
     }
     case '1': //�i�J�Ѳ��������
@@ -702,17 +746,18 @@ void Stock::Switch_choice(vector <Stock> share, char choice, vector <Customer> c
             }
         }*/
     }
-    case '3':  //���U�s�Τ�
+    case '3':  //註冊新用戶
     {
         system("cls");
         cout << "Registration" << endl;
         cout << "~~~~~~~~~~" << endl;
-        cust.Register(&cust);
+        cust.Register(cus);
+        /*cust.Register(&cust);
         ofstream write_customer(cust.Customer_Name);
         write_customer.write((char*)&cust,sizeof(cust));
         write_customer.close();
         main();
-        break;
+        break;*/
     }
     default:
         break;
@@ -788,7 +833,7 @@ void Stock::Close_Selling_Stock(vector <Stock> share)//�Ȱ��Ѳ����
                 if(input == 'y')
                 {
                     share[i].Close_Selling = 1;
-                    Save(share);
+                    StockWrite(share);
                     cout << "Stopped" << endl;
                     cout << endl;
                     break;
@@ -837,7 +882,7 @@ void Stock::Start_Selling_Stock(vector <Stock> share)//��_�Ѳ����
             if(input == 'y')
             {
                 share[i].Close_Selling = 0;
-                Save(share);
+                StockWrite(share);
                 cout << "Resumed" << endl;
                 cout << endl;
                 break;
@@ -910,7 +955,7 @@ void Stock::Modify_Stock(vector <Stock> t)//�վ��T
                         cin >> share_code;
                     }
                     t[i].Stock_Code = share_code;
-                    Save(t);
+                    StockWrite(t);
                 }
             }
             else
@@ -931,12 +976,22 @@ void Stock::Modify_Stock(vector <Stock> t)//�վ��T
     }
 }
 
-void Save(vector <Stock> t)
+void StockWrite(vector <Stock> share)
 {
-    ofstream write_data("Stock_File.txt");
-    for(int i=0; i < TOTALSTOCKS; i++)
+    ofstream dataFile("Stock_File.txt");
+    if (!dataFile)
     {
-        write_data.write((char*)(&t[i]),sizeof(t[i]));
+        cout << "Can not open Stock_file.txt" << endl;
+    }
+    else {
+        for (int i=0; i<share.size(); i++)
+        {
+            dataFile << share[i].Stock_Name << ' ' << share[i].Stock_Code << ' ' << ' '
+            << share[i].Stock_Volume << ' ' << share[i].Free_Stocks_Float << ' '
+            << share[i].Stock_Issue_Price << ' ' << share[i].Stock_Listed_Price << ' '
+            << share[i].Market_Value << ' ' << share[i].openingPrice << ' '
+            << share[i].closingPrice << ' ' << share[i].currentPrice << ' ' << share[i].Close_Selling << endl;
+        }
     }
 }
 
