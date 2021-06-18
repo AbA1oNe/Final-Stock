@@ -61,7 +61,7 @@ public:
     friend void Save(vector <Stock>);         //保存修改
 };
 
-void Interface(vector <Stock>, time_t);
+void Interface(vector <Stock>, time_t, vector <Customer>);
 
 class Customer
 {
@@ -100,25 +100,25 @@ public:
     }
     void Log_In(string, vector <Stock>, time_t) const;//登錄
     void Register(Customer *);//註冊
-    void Stock_Portfolio(vector <Stock>, time_t) const; // 有價證券
+    void Stock_Portfolio(vector <Stock>, time_t, vector <Customer>, int ) const; // 有價證券
     //friend void Switch_choice(vector <Stock>, char, time_t);
 };
 Stock temp;//全局變量，聲明股票對象
 Customer cust;//聲明用戶對象，全局變量
 
 
-void Customer::Log_In(string pass_word, vector <Stock> share, time_t startTime) const//登錄
+/*void Customer::Log_In(string pass_word, vector <Stock> share, time_t startTime) const//登錄
 {
     if( pass_word == Customer_Password )//核對密碼
     {
-        Stock_Portfolio(share, startTime);
+        Stock_Portfolio(share, startTime,);
     }
     else
     {
         cout << endl;
         cout << "Wrong password"<<endl;
     }
-}
+}*/
 
 void Customer::Register(Customer *cust)//註冊
 {
@@ -166,7 +166,7 @@ void Customer::Register(Customer *cust)//註冊
     getch();
 }
 
-void Customer::Stock_Portfolio(vector <Stock> share, time_t startTime) const//用戶交易操作介面系統
+void Customer::Stock_Portfolio(vector <Stock> share, time_t startTime, vector <Customer> cus, int index) const//用戶交易操作介面系統
 {
     int i,a;
     char input;
@@ -545,7 +545,7 @@ start:
     }
 }
 
-void Interface(vector <Stock> share, time_t startTime)
+void Interface(vector <Stock> share, time_t startTime, vector <Customer> cus)
 {
     char choice;
     system("cls");
@@ -564,7 +564,7 @@ void Interface(vector <Stock> share, time_t startTime)
     case '2':
     case '3':
     case '0':
-        Switch_choice(share, choice, startTime);
+        temp.Switch_choice(share, choice, startTime, cus);
     default:
         system("cls");
         main();
@@ -623,15 +623,37 @@ void Stock::Switch_choice(vector <Stock> share, char choice, time_t startTime, v
     case '2'://登陸用戶
     {
         int i = 0;
-        string acc;
+        string acc, pass;
         bool flag = 0;
         system("cls");
         cout << "\n\n\t\t***************The Stock System**************" << endl;
         cout << "\t\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << endl;
-        cout << "Enter your Account";
+        cout << "Enter your Account: ";
         cin >> acc;
         for(i; i<cus.size(); i++) {
-
+            if(acc == cus[i].Customer_Name) {
+                flag = 1;
+                break;
+            }
+        }
+        if(!flag) {
+            cout << "Not in the database" << endl;
+            getch();
+            main();
+        }
+        else {
+            cout<< "Enter your password: ";
+            cin>>pass;
+            while(pass != cus[i].Customer_Password) {
+                system("cls");
+                cout<< "Wrong password" <<endl;
+                cout<< "Enter your password: ";
+                cin>>pass;
+            }
+            cout << "Sign in suceesfully" <<endl;
+            cin.get();
+            cust.Stock_Portfolio(share, startTime, cus, i);
+            break;
         }
         /*ifstream read_customer(cust.Customer_Name);//讀已有數據//要再修改
         while( !read_customer.eof() )//判斷是否有記錄
@@ -944,5 +966,5 @@ int main()
 
     time_t startTime;
     startTime = time(NULL);
-    Interface(share, startTime);
+    Interface(share, startTime, Cus);
 }
