@@ -71,16 +71,16 @@ private:
     double share_holding_value[10] = {0};   //�����Ѳ��ƶq
     string Customer_Name;                   //�Τ�W
     string Customer_Password;               //�K�X
-    string share_holding_name[10] = {""};   //�����Ѳ��W��
-    string share_holding_code[10] = {""};   //�����Ѳ��N�X
+    string share_holding_name[10] = {"$"};   //�����Ѳ��W��
+    string share_holding_code[10] = {"$"};   //�����Ѳ��N�X
 
     double Balance;                         //�{���l�B
     double Holding_Market_Value;            //�����Ѳ�����
     double Total_Assets;                    //�`�겣
     bool Administrator;                     //�O�_�޲z��
 public:
-    Customer(string CusName = "", string CusPass = "", vector <string> VHoldName = {""},
-             vector <string> VHoldCode = {""}, vector <double> VHoldValue = {0},
+    Customer(string CusName = "", string CusPass = "", vector <string> VHoldName = {"$"},
+             vector <string> VHoldCode = {"$"}, vector <double> VHoldValue = {0},
              double B = 0, double HMV = 0, double TA = 0, bool Admin = 0)
     {
         Customer_Name = CusName;
@@ -222,7 +222,7 @@ start:
     cout << endl << endl;
     cout << "\t\tWelcome to---------------The Stock System---------------" << endl;
     cout << "\t\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << endl;
-    cout << "\t\t User: " << cust.Customer_Name << endl << endl;
+    cout << "\t\t User: " << cus[index].Customer_Name << endl << endl;
     cout << "\t\t Buy..........................[1]" << endl;
     cout << "\t\t Sell..........................[2]" << endl;
     cout << "\t\t Resume a stock's trading..................[3]" << endl;
@@ -279,9 +279,9 @@ start:
             }
             cout << "\t\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << endl;
             cout << " Market Value of Holding Stock\tMoney\tTotal Assets" << endl;
-            cout << cust.Holding_Market_Value
-                 << "\t\t" << cust.Balance
-                 << "\t\t" << cust.Total_Assets << endl;
+            cout << cus[index].Holding_Market_Value
+                 << "\t\t" << cus[index].Balance
+                 << "\t\t" << cus[index].Total_Assets << endl;
             cin.get();
             cout << endl << "Enter the stock code you want to buy:";
             cin >> code;
@@ -309,7 +309,7 @@ start:
                         else
                         {
                             int Max_Buy_Stock_Volume;//�{���l�B�i�R�Ѽ�
-                            Max_Buy_Stock_Volume = int(cust.Balance/share[i].Stock_Listed_Price);//����
+                            Max_Buy_Stock_Volume = int(cus[index].Balance/share[i].Stock_Listed_Price);//����
                             cout << "At most you can buy:" << Max_Buy_Stock_Volume << endl;
                             flag = 1;
                             cout << "Enter how much you want to buy: ";
@@ -319,40 +319,28 @@ start:
                                 cout<<"Please enter an integer"<<endl;
                                 cin >> volume;
                             }
-                            if( (share[i].Free_Stocks_Float >= volume) && (cust.Balance >= volume*share[i].Stock_Listed_Price) )
+                            if( (share[i].Free_Stocks_Float >= volume) && (cus[index].Balance >= volume*share[i].Stock_Listed_Price) )
                             {
                                 //��ʦU�ƾ�
-                                cust.share_holding_value[i] += volume;
-                                cust.share_holding_name[i] = share[i].Stock_Name;
-                                cust.share_holding_code[i] = share[i].Stock_Code;
+                                cus[index].share_holding_value[i] += volume;
+                                cus[index].share_holding_name[i] = share[i].Stock_Name;
+                                cus[index].share_holding_code[i] = share[i].Stock_Code;
 
                                 share[i].Free_Stocks_Float -= volume;
-                                cust.Balance -= share[i].Stock_Listed_Price*volume;
-                                cust.Holding_Market_Value += share[i].Stock_Listed_Price*volume;
+                                cus[index].Balance -= share[i].Stock_Listed_Price*volume;
+                                cus[index].Holding_Market_Value += share[i].Stock_Listed_Price*volume;
                                 system("cls");
                                 cout << "Done" << endl;
                                 cout << endl;
-                                cout << "\t\t\t------------------------------The Stock System------------------------------" << endl;
-            cout << "\t\t\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << endl;
-            cout << " Company Name\t\tCompany Code\tFloating Stocks\t\tShare-holding Stock\t\tStock Issue Price\t\tStock Listed Price\t\tStatus" << endl;
-                                for(i=0; i < TOTALSTOCKS; i++)
-                                {
-                                    cout << " " << share[i].Stock_Name
-                                         << "\t" << share[i].Stock_Code
-                                         << "\t" << share[i].Stock_Volume
-                                         << "\t" << cust.share_holding_value[i]
-                                         << "\t" << share[i].Stock_Issue_Price
-                                         << "\t " << share[i].Stock_Listed_Price
-                                         << " \t " << (share[i].Close_Selling == 0 ?"Trading Not Stopped":"Trading Stopped") << endl;
-                                }
                                 cout << "Market Valuse of Holding Stock\tMoney\tTotal Assets"  << endl;
                                 cout << cust.Holding_Market_Value
                                      << "\t\t" << cust.Balance
                                      << "\t\t" << cust.Total_Assets << endl;
                                 cin.get();
-                                ofstream dataFile (cust.Customer_Name,ios::binary);
-                                dataFile.write((char*)(&cust),sizeof(cust));
+                                //ofstream dataFile (cust.Customer_Name,ios::binary);
+                                //dataFile.write((char*)(&cust),sizeof(cust));
                                 StockWrite(share);
+                                goto start;
                             }
                             else if(share[i].Free_Stocks_Float <= volume)
                             {
@@ -364,9 +352,9 @@ start:
                                 system("cls");
                                 goto start;
                             }
-                            else if(cust.Balance <= volume*share[i].Stock_Listed_Price)
+                            else if(cus[index].Balance <= volume*share[i].Stock_Listed_Price)
                             {
-                                cout << "Not enough money";
+                                cout << "Not enough money" << endl;
                                 cout << "Hit any key to return" << endl;
                                 cout << endl;
                                 getch();
@@ -378,11 +366,12 @@ start:
                     else
                     {
                         i++;
-                        while(i == TOTALSTOCKS)
+                        if(i == TOTALSTOCKS-1)
                         {
                             system("cls");
                             cout << "Wrong code" << endl;
                             cout << "Hit any ket to return" << endl;
+                            getch();
                             goto start;
                         }
                     }
@@ -392,6 +381,8 @@ start:
             {
                 cout << "Wrong format" << endl;
                 cout << "Hit any key to return" << endl;
+                cin.get();
+                goto start;
             }
             cin.get();
             break;
@@ -403,26 +394,24 @@ start:
             cout << "\t\t\t------------------------------The Stock System------------------------------" << endl;
             cout << "\t\t\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << endl;
             cout << " Company Name\t\tCompany Code\tFloating Stocks\t\tShare-holding Stock\t\tStock Issue Price\t\tStock Listed Price\t\tStatus" << endl;
-            for(i=0; i < TOTALSTOCKS; i++)
+            for(int i=0; i < TOTALSTOCKS; i++)
             {
-                cout << " " << share[i].Stock_Name
-                     << "\t" << share[i].Stock_Code
-                     << "\t" << share[i].Stock_Volume
-                     << "\t" << cust.share_holding_value[i]
-                     << "\t" << share[i].Stock_Issue_Price
-                     << "\t " << share[i].Stock_Listed_Price
-                     << " \t " << (share[i].Close_Selling == 0 ?"Trading Not Stopped":"Trading Stopped") << endl;
+                Display_Stock_Market_Information(share, i);//��ܥ����H��
             }
-            cout << "\t\t ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << endl;
+            cout << "\t\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << endl;
             cout << " Market Value of Holding Stock\tMoney\tTotal Assets" << endl;
-            cout << cust.Holding_Market_Value << "\t\t" << cust.Balance << "\t\t" << cust. Total_Assets << endl;
+            cout << cus[index].Holding_Market_Value
+                 << "\t\t" << cus[index].Balance
+                 << "\t\t" << cus[index].Total_Assets << endl;
             cin.get();
+
             cout << endl << "Enter the stock code you want to sell: ";
             code = "";
+            cin >> code;
             while (code.size() > 5 || code.size() <= 0)
             {
                 cout << "Stock code has to be less than 5 characters or 1 above" << endl;
-                cout << "Enter the stock code you want to buy:";
+                cout << "Enter the stock code you want to sell:";
                 cin >> code;
             }
 
@@ -449,17 +438,17 @@ start:
                                 cout<<"Please enter an integer"<<endl;
                                 cin >> volume;
                             }
-                            if(cust.share_holding_value[i] >= volume)
+                            if(cus[index].share_holding_value[i] >= volume)
                             {
-                                cust.share_holding_value[i] -= volume;
+                                cus[index].share_holding_value[i] -= volume;
                                 share[i].Free_Stocks_Float += volume;
-                                cust.Balance += share[ i].Stock_Listed_Price*volume;
-                                cust.Holding_Market_Value -= share[i].Stock_Listed_Price*volume;
+                                cus[index].Balance += share[i].Stock_Listed_Price*volume;
+                                cus[index].Holding_Market_Value -= share[i].Stock_Listed_Price*volume;
                                 system("cls");
                                 cout << "Done" << endl;
                                 cout << endl;
-                                ofstream data(cust.Customer_Name,ios::binary);
-                                data.write((char*)(&cust),sizeof(cust));
+                                //ofstream data(cust.Customer_Name,ios::binary);
+                                //data.write((char*)(&cust),sizeof(cust));
                                 StockWrite(share);
                             }
                             else
@@ -476,11 +465,11 @@ start:
                     else
                     {
                         i++;
-                        while(i == TOTALSTOCKS)
+                        if(i == TOTALSTOCKS-1)
                         {
                             system("cls");
-                            cout << "You didn't buy the stock" << endl;
-                            cout << "Hit any key to return";
+                            cout << "Wrong code" << endl;
+                            cout << "Hit any ket to return" << endl;
                             getch();
                             goto start;
                         }
@@ -500,8 +489,8 @@ start:
             {
                 system("cls");
                 cout << "\t\t\t------------------------------The Stock System------------------------------" << endl;
-            cout << "\t\t\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << endl;
-            cout << " Company Name\t\tCompany Code\tFloating Stocks\t\tShare-holding Stock\t\tStock Issue Price\t\tStock Listed Price\t\tStatus" << endl;
+                cout << "\t\t\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << endl;
+                cout << " Company Name\t\tCompany Code\tFloating Stocks\t\tShare-holding Stock\t\tStock Issue Price\t\tStock Listed Price\t\tStatus" << endl;
                 for(int i=0; i < TOTALSTOCKS; i++)
                 {
                     Display_Stock_Market_Information(share, i);//��ܥ����H��
@@ -573,7 +562,7 @@ start:
                 cout << " "   << share[i].Stock_Name
                      << "\t\t" << share[i].Stock_Code
                      << "\t\t" << share[i].Stock_Volume
-                     << "\t\t" << cust.share_holding_value[i]
+                     << "\t\t" << cus[index].share_holding_value[i]
                      << "\t\t" << share[i].Stock_Issue_Price
                      << "\t\t" << share[i].Stock_Listed_Price
                      << "\t\t" << (share[i].Close_Selling == 0?"Trading Not Stopped":"Trading Stopped") << endl;
@@ -581,9 +570,24 @@ start:
             }
             cout << "\t\t\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << endl;
             cout << "Market Value of Holding Stock\t\tMoney\tTotal Assets"<<endl;
-            cout << " " << cust.Holding_Market_Value
-                 << "\t\t\t" << cust.Balance
-                 << "\t\t" << cust.Total_Assets << endl;
+            cout << " " << cus[index].Holding_Market_Value
+                 << "\t\t\t" << cus[index].Balance
+                 << "\t\t" << cus[index].Total_Assets << endl;
+
+            cout << "\t\t\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << endl;
+            cout << "Stock you own" << endl;
+            cout << "Name \t Code \t Value" << endl;
+
+            for (int j=0; j<TOTALSTOCKS; j++)
+            {
+                if (cus[index].share_holding_name[j] == "$")//this means no name in the array
+                {
+                    continue;
+                }
+                else {
+                    cout << cus[index].share_holding_name[j] << ' ' << cus[index].share_holding_code[j] << ' ' << cus[index].share_holding_value[j] << endl;
+                }
+            }
             getch();
             break;
         }
@@ -986,7 +990,7 @@ void StockWrite(vector <Stock> share)
     else {
         for (int i=0; i<share.size(); i++)
         {
-            dataFile << share[i].Stock_Name << ' ' << share[i].Stock_Code << ' ' << ' '
+            dataFile << share[i].Stock_Name << ' ' << share[i].Stock_Code << ' '
             << share[i].Stock_Volume << ' ' << share[i].Free_Stocks_Float << ' '
             << share[i].Stock_Issue_Price << ' ' << share[i].Stock_Listed_Price << ' '
             << share[i].Market_Value << ' ' << share[i].openingPrice << ' '
