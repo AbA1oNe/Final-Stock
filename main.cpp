@@ -57,7 +57,7 @@ public:
     void Modify_Stock(vector <Stock>);//修改股票資料(管理員)
 
     void Display_Stock_Market_Information();//顯示信息
-    friend void Switch_choice(vector <Stock>, char, time_t);//功能選擇
+    void Switch_choice(vector <Stock>, char, time_t ,vector <Customer>);//功能選擇
     friend void Save(vector <Stock>);         //保存修改
 };
 
@@ -101,7 +101,7 @@ public:
     void Log_In(string, vector <Stock>, time_t) const;//登錄
     void Register(Customer *);//註冊
     void Stock_Portfolio(vector <Stock>, time_t) const; // 有價證券
-    friend void Switch_choice(vector <Stock>, char, time_t);
+    //friend void Switch_choice(vector <Stock>, char, time_t);
 };
 Stock temp;//全局變量，聲明股票對象
 Customer cust;//聲明用戶對象，全局變量
@@ -571,7 +571,7 @@ void Interface(vector <Stock> share, time_t startTime)
     }
 }
 
-void Switch_choice(vector <Stock> share, char choice, time_t startTime)
+void Stock::Switch_choice(vector <Stock> share, char choice, time_t startTime, vector <Customer> cus)
 {
     char pass_word[10];
     switch(choice)
@@ -622,13 +622,18 @@ void Switch_choice(vector <Stock> share, char choice, time_t startTime)
     }
     case '2'://登陸用戶
     {
+        int i = 0;
+        string acc;
+        bool flag = 0;
         system("cls");
         cout << "\n\n\t\t***************The Stock System**************" << endl;
         cout << "\t\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << endl;
         cout << "Enter your Account";
-        cin >> cust.Customer_Name;
-        cin.get();
-        ifstream read_customer(cust.Customer_Name);//讀已有數據//要再修改
+        cin >> acc;
+        for(i; i<cus.size(); i++) {
+
+        }
+        /*ifstream read_customer(cust.Customer_Name);//讀已有數據//要再修改
         while( !read_customer.eof() )//判斷是否有記錄
         {
             read_customer.read((char*)(&cust),sizeof(cust));
@@ -670,7 +675,7 @@ void Switch_choice(vector <Stock> share, char choice, time_t startTime)
                 cin.get();
                 break;
             }
-        }
+        }*/
     }
     case '3':  //註冊新用戶
     {
