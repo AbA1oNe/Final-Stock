@@ -12,9 +12,9 @@
 #include <cstdlib>
 using namespace std;
 
-const int TOTALSTOCKS = 10;//³]©w¦³©ñ´X­ÓªÑ²¼ªº¸ê®Æ
+const int TOTALSTOCKS = 10;//è¨­å®šæœ‰æ”¾å¹¾å€‹è‚¡ç¥¨çš„è³‡æ–™
 int flag;
-double Random();    //¯B°ÊªÑ²¼ªºFunction
+double Random();    //å®šæœŸæµ®å‹•Function
 int main();
 
 class Customer;
@@ -23,27 +23,26 @@ class Stock
 {
     friend class Customer;
 private:
-    unsigned long long Stock_Volume;    //ªÑ²¼Á`ªÑ¼Æ   //10¦ì¥¿¾ã¼Æ //0 ¨ì 4,294,967,295 //1±i1000ªÑ
-    unsigned long long Free_Stocks_Float;//¦Û¥Ñ¬y³qªÑ¥÷ //10¦ì¥¿¾ã¼Æ //0 ¨ì 4,294,967,295 //1±i1000ªÑ
+    unsigned long long Stock_Volume;    //è‚¡ç¥¨ç¸½è‚¡æ•¸   //10ä½æ­£æ•´æ•¸ //0 åˆ° 4,294,967,295 //1å¼µ1000è‚¡
+    unsigned long long Free_Stocks_Float;//è‡ªç”±æµé€šè‚¡ä»½ //10ä½æ­£æ•´æ•¸ //0 åˆ° 4,294,967,295 //1å¼µ1000è‚¡
     long long int The_Share_Volume_Of_Stocks;//???????q //????
-    string Stock_Name;            //ªÑ²¼¦WºÙ
-    string Stock_Code;             //ªÑ²¼¥N½X
-    double Stock_Issue_Price;       //ªÑ²¼µo¦æ»ù
-    double Stock_Listed_Price;      //ªÑ²¼¤W¥«»ù
-    double Market_Value;            //ªÑ²¼¥«­È
-    double openingPrice;            //¶}½L»ù 
-    double closingPrice;            //¦¬½L»ù       //¥¼°µ
-    double currentPrice;            //¶R½æ»ù
-    bool Close_Selling;             //¬O§_¼È°±¥æ©öÃÒ¨é¡]1¬°¬O¡A0¬°§_¡^//­ì¥»¥i¥H¿Ä¨éªºªÑ²¼¡A¼È®É¤£¯à¦A¥H¿Ä¨é½æ¥X¡C//Short_Selling_Suspended
-    int color;                      //ÃC¦â
+    string Stock_Name;            //è‚¡ç¥¨åç¨±
+    string Stock_Code;             //è‚¡ç¥¨ä»£ç¢¼
+    double Stock_Issue_Price;       //è‚¡ç¥¨ç™¼è¡Œåƒ¹
+    double Stock_Listed_Price;      //è‚¡ç¥¨ä¸Šå¸‚åƒ¹
+    double Market_Value;            //è‚¡ç¥¨å¸‚å€¼         //æœªåš
+    double openingPrice;            //é–‹ç›¤åƒ¹       //æœªåš
+    double closingPrice;            //æ”¶ç›¤åƒ¹       //æœªåš
+    double currentPrice;            //è²·è³£åƒ¹       //æœªåš
+    bool Close_Selling;             //æ˜¯å¦æš«åœäº¤æ˜“è­‰åˆ¸ï¼ˆ1ç‚ºæ˜¯ï¼Œ0ç‚ºå¦ï¼‰//åŸæœ¬å¯ä»¥èåˆ¸çš„è‚¡ç¥¨ï¼Œæš«æ™‚ä¸èƒ½å†ä»¥èåˆ¸è³£å‡ºã€‚//Short_Selling_Suspended
+    int color;                      //é¡è‰²
 public:
     Stock(string name = "", string code = "", unsigned long long volume = 0,unsigned long long freefloat = 0, double issuePrice = 0, double listedPrice = 0, double value = 0, double openPrice = 0, double closePrice = 0, double currentPrice = 0, bool close = 0)
     {
-        //Num_Of_Stock = 0;//?{???????????q?A?p???
         Stock_Name = name;
         Stock_Code = code;
         Stock_Volume = volume;
-        Free_Stocks_Float = Stock_Volume;//??l???y?q???
+        Free_Stocks_Float = Stock_Volume;//åˆå§‹è‡ªç”±æµé€šè‚¡ä»½
         Stock_Issue_Price = issuePrice;
         Stock_Listed_Price = listedPrice;
         Market_Value = value;
@@ -53,83 +52,31 @@ public:
         Close_Selling = close;
         color = 0;
     }
-    void Close_Selling_Stock(vector <Stock>); //?????????
-    void Start_Selling_Stock(vector <Stock>); //??_??????
-    void Modify_Stock(vector <Stock>);//????????(??z??)
-    void Delete_Stock();        //?R?????(??z??)
-    void Add_New_Stock();       //?[?J?s???(??z??)
+    void Close_Selling_Stock(vector <Stock>); //æš«åœè‚¡ç¥¨äº¤æ˜“
+    void Start_Selling_Stock(vector <Stock>); //æ¢å¾©è‚¡ç¥¨äº¤æ˜“
+    void Modify_Stock(vector <Stock>);//ä¿®æ”¹è‚¡ç¥¨è³‡æ–™(ç®¡ç†å“¡)
 
-    void Display_Stock_Market_Information();//???H??
-    friend void Switch_choice(vector <Stock>, char, time_t);       //?\????
-    void Market_Analysis();     //???????R
-    friend void Save(vector <Stock>);         //?O?s???
-//-----------------------------------------------------------------??111????
-    /*?i??U??????H??
-    (
-    1.?}?L???GOpening Price
-    2.???L???GClosing Price
-    3.?????GLimit Up
-    4.?^???GLimit Down
-    5.???? : Price
-    ......??
-    )
-    */
-    void setEverything(char*, char*, int, double, double, double, long long, long long, long long, long long, long long);
-    friend void Write_File();//?g??
-    //?H?U????private data
-    string getStock_Name()
-    {
-        return this -> Stock_Name;
-    }
-    string getStock_Code();
-    double getStock_Issue_Price();
-    double getStock_Listed_Price();
-    double getMarket_Value();
-    long long int getFree_Stocks_Float();
-    long long int getThe_Share_Volume_Of_Stocks();
-    double getOpeningPrice();
-    double getClosingPrice();
-    double getPrice();
-
-    bool checkFloat();//??d?B?? ?p?G???htrue
-    void randomChange(vector <Stock>);//?H????????e??????
+    void Display_Stock_Market_Information();//é¡¯ç¤ºä¿¡æ¯
+    friend void Switch_choice(vector <Stock>, char, time_t);//åŠŸèƒ½é¸æ“‡
+    friend void Save(vector <Stock>);         //ä¿å­˜ä¿®æ”¹
 };
 
-/*void Stock::setEverything(char* name, char* code, int update, double issue, double listed, double market, long long floatStock, long long shareVolume, long long opening, long long closing, long long current)
-{
-    //?]?wclass??private data
-    strcpy(this->Stock_Name,name);
-    //this->Stock_Name = name;
-    strcpy(this->Stock_Code,code);
-    //this->Stock_Code = code;
-    this->updateTimes = update;
-    this->Stock_Issue_Price = issue;
-    this->Stock_Listed_Price = listed;
-    this->Market_Value = market;
-    this->Free_Stocks_Float = floatStock;
-    this->The_Share_Volume_Of_Stocks = shareVolume;
-    this->openingPrice = opening;
-    this->closingPrice = closing;
-    this->currentPrice = current;
-}*/
-//--------------------------------------------------------------------??o??
-
-void Interface(vector <Stock>, time_t);//???????
+void Interface(vector <Stock>, time_t);
 
 class Customer
 {
     friend class Stock;
 private:
-    unsigned long int share_holding_value[10];//?????????q
-    string Customer_Name;//?£V?W
-    string Customer_Password;//?K?X
-    string share_holding_name[10];//????????W??
-    string share_holding_code[10];//????????N?X
+    unsigned long int share_holding_value[10];//æŒæœ‰è‚¡ç¥¨æ•¸é‡
+    string Customer_Name;//ç”¨æˆ¶å
+    string Customer_Password;//å¯†ç¢¼
+    string share_holding_name[10];//æŒæœ‰è‚¡ç¥¨åç¨±
+    string share_holding_code[10];//æŒæœ‰è‚¡ç¥¨ä»£ç¢¼
 
-    double Balance;//?{???l?B
-    double Holding_Market_Value;//???????????
-    double Total_Assets;//?`??
-    bool Administrator;//?O?_??z??
+    double Balance;//ç¾é‡‘é¤˜é¡
+    double Holding_Market_Value;//æŒæœ‰è‚¡ç¥¨å¸‚å€¼
+    double Total_Assets;//ç¸½è³‡ç”¢
+    bool Administrator;//ç®¡ç†å“¡
 public:
     Customer()
     {
@@ -142,69 +89,57 @@ public:
             Balance = Holding_Market_Value = Total_Assets = 0;
         }
     }
-    void Log_In(string, vector <Stock>, time_t) const;//?n??
-    void Register(Customer *);//???U
-    void Stock_Portfolio(vector <Stock>, time_t) const; // Portfolio--???????
+    void Log_In(string, vector <Stock>, time_t) const;//ç™»éŒ„
+    void Register(Customer *);//è¨»å†Š
+    void Stock_Portfolio(vector <Stock>, time_t) const; // æœ‰åƒ¹è­‰åˆ¸
     friend void Switch_choice(vector <Stock>, char, time_t);
-    //----------------------------------------------------------------------------------??151????
-    /*
-    void buy();//?R
-    void sell();//??
-    string getName();
-    string getPass();
-    holdingStock getHoldingStock();
-    double getBalance();
-    double getTotalAsset();
-    bool getAdmin();
-    */
-    //-----------------------------------------------------------------------------------??o???
 };
-Stock temp;//??????q?A?n???????H
-Customer cust;//?n???£V??H?A??????q
+Stock temp;//å…¨å±€è®Šé‡ï¼Œè²æ˜è‚¡ç¥¨å°è±¡
+Customer cust;//è²æ˜ç”¨æˆ¶å°è±¡ï¼Œå…¨å±€è®Šé‡
 
 
-void Customer::Log_In(string pass_word, vector <Stock> share, time_t startTime) const//?n??
+void Customer::Log_In(string pass_word, vector <Stock> share, time_t startTime) const//ç™»éŒ„
 {
-    if( pass_word == Customer_Password )//???K?X
+    if( pass_word == Customer_Password )//æ ¸å°å¯†ç¢¼
     {
         Stock_Portfolio(share, startTime);
     }
     else
     {
         cout << endl;
-        cout << "±K½X¿ù»~"<<endl;
+        cout << "å¯†ç¢¼éŒ¯èª¤"<<endl;
     }
 }
 
-void Customer::Register(Customer *cust)//???U?b??
+void Customer::Register(Customer *cust)//è¨»å†Š
 {
     char input;
-    system("cls"); //????t?£[R?O?G?M??=cls
+    system("cls");
     cin.get();
-    cout << "Åwªï¶i¤J---------------ªÑ²¼¨t²Î---------------" << endl;
+    cout << "æ­¡è¿é€²å…¥---------------è‚¡ç¥¨ç³»çµ±---------------" << endl;
     cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << endl;
-    cout << "½Ğ¿é¤J±b¸¹/¥Î¤á¦W: ";
+    cout << "è«‹è¼¸å…¥å¸³è™Ÿ/ç”¨æˆ¶å: ";
     cin >> Customer_Name;
-    cout << "½Ğ¿é¤J±K½X(¤Ö©ó8 ¦r): " << endl;
+    cout << "è«‹è¼¸å…¥å¯†ç¢¼:" << endl;
     cin >> Customer_Password;
     while (Customer_Password.size() <= 0 || Customer_Password.size() > 8)
     {
-        cout << "±K½X¤£¯à¤j©ó8­Ó¦r¤¸¤Î¦Ü¤Ö­n¦³¤@­Ó¦r¤¸" << endl;
-        cout << "½Ğ¿é¤J±K½X(¤Ö©ó8 ¦r): " << endl;
+        cout << "å¯†ç¢¼éœ€å°æ–¼8å€‹å­—å…ƒæˆ–è‡³å°‘æœ‰ä¸€å€‹å­—å…ƒ" << endl;
+        cout << "è«‹è¼¸å…¥å¯†ç¢¼: " << endl;
         cin >> Customer_Password;
     }
 
     cout << endl;
-    cout << "¿é¤J±zªºªì©l¸êª÷:";
+    cout << "è«‹è¼¸å…¥æ‚¨çš„åˆå§‹è³‡é‡‘:";
     cin >> Total_Assets;
     Holding_Market_Value = 0;
     Balance = Total_Assets;
-    cout << "¬O§_³]¬°ºŞ²z­û?(y/n)" << endl;//¤j¤p¼g³£¦æ
+    cout << "æ˜¯å¦è¨­ç‚ºç®¡ç†å“¡?(y/n)" << endl;//å¤§å°å¯«éƒ½è¡Œ
     cin >> input;
     if( (input == 'y') || (input == 'Y') )
     {
         Administrator = 1;
-        cout << "¤w³]©w";
+        cout << "å·²è¨­å®š";
     }
     else if( (input == 'n') || (input == 'N') )
     {
@@ -212,17 +147,17 @@ void Customer::Register(Customer *cust)//???U?b??
     }
     else
     {
-        cout << "Àq»{¬°«DºŞ²z­û";
+        cout << "é»˜èªç‚ºéç®¡ç†å“¡";
     }
     getch();
-    system("cls");//²MªÅ
-    cout << "¤w¸g§¹¦¨µù¥U"     << endl;
+    system("cls");//æ¸…ç©º
+    cout << "å·²ç¶“å®Œæˆè¨»å†Š"     << endl;
     cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << endl;
-    cout << "«ö¥ô·NÁäªğ¦^" << endl;
+    cout << "æŒ‰ä»»æ„éµè¿”å›" << endl;
     getch();
 }
 
-void Customer::Stock_Portfolio(vector <Stock> share, time_t startTime) const//?£V?????@?????t??
+void Customer::Stock_Portfolio(vector <Stock> share, time_t startTime) const//ç”¨æˆ¶äº¤æ˜“æ“ä½œä»‹é¢ç³»çµ±
 {
     int i,a;
     char input;
@@ -231,17 +166,17 @@ void Customer::Stock_Portfolio(vector <Stock> share, time_t startTime) const//?£
 start:
     system("cls");
     cout << endl << endl;
-    cout << "\t\tÅwªï¨Ï¥Î---------------ªÑ²¼¨t²Î---------------" << endl;
+    cout << "\t\tæ­¡è¿ä½¿ç”¨---------------è‚¡ç¥¨ç³»çµ±---------------" << endl;
     cout << "\t\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << endl;
-    cout << "\t\t ¥Î¤á: " << cust.Customer_Name << endl << endl;
-    cout << "\t\t ¶R¤J..........................[1]" << endl;
-    cout << "\t\t ½æ¥X..........................[2]" << endl;
-    cout << "\t\t «ì´_ªÑ²¼¥æ©ö..................[3]" << endl;
-    cout << "\t\t ¼È°±ªÑ²¼¥æ©ö..................[4]" << endl;
-    cout << "\t\t ­×§ïªÑ²¼¥N½X¤Î¦WºÙ............[5]" << endl;//?i?H?A?s?W?n???
-    cout << "\t\t ¬d¬İªÑ¥«¸ê°T..................[6]" << endl;
-    cout << "\t\t °h¥X±b¸¹......................[0]" << endl;
-    cout << endl << "\t\t ¿é¤J¥\¯à¿ï¶µ: ";
+    cout << "\t\t ç”¨æˆ¶: " << cust.Customer_Name << endl << endl;
+    cout << "\t\t è²·å…¥..........................[1]" << endl;
+    cout << "\t\t è³£å‡º..........................[2]" << endl;
+    cout << "\t\t æ¢å¾©è‚¡ç¥¨äº¤æ˜“..................[3]" << endl;
+    cout << "\t\t æš«åœè‚¡ç¥¨äº¤æ˜“..................[4]" << endl;
+    cout << "\t\t ä¿®æ”¹è‚¡ç¥¨ä»£ç¢¼åŠåç¨±............[5]" << endl;//?i?H?A?s?W?n???
+    cout << "\t\t æŸ¥çœ‹è‚¡å¸‚è³‡è¨Š..................[6]" << endl;
+    cout << "\t\t é€€å‡ºå¸³è™Ÿ......................[0]" << endl;
+    cout << endl << "\t\t è¼¸å…¥åŠŸèƒ½é¸é …: ";
 
     cin >> input;
 
@@ -251,11 +186,11 @@ start:
     {
         switch(input)
         {
-        case '0'://??^?D????
+        case '0'://è¿”å›ä¸»é é¢
         {
             main();
         }
-        case '1': //?R?J
+        case '1': //è²·å…¥
         {
             time_t endtime = time(NULL);
             for (int j=0; j<(endtime - startTime) / 10; j++)
@@ -263,12 +198,12 @@ start:
                 for (int i=0; i<TOTALSTOCKS; i++)
                 {
                     srand(time(NULL));
-                    double x = rand() % 21 -10; // x???d??[-10, 10]
+                    double x = rand() % 21 -10; //[-10, 10]
                     double result = x * 0.01;
                     
                     double original = share[i].Stock_Listed_Price;
                     share[i].Stock_Listed_Price = (1+result) * share[i].Stock_Listed_Price;
-                    if (original < share[i].Stock_Listed_Price)//º¦
+                    if (original < share[i].Stock_Listed_Price)//æ¼²
                     {
                         share[i].color = 12;
                     }
@@ -280,30 +215,30 @@ start:
                 }
             }
             system("cls");
-            cout << "\t\t\t------------------------------ªÑ²¼¨t²Î------------------------------" << endl;
+            cout << "\t\t\t------------------------------è‚¡ç¥¨ç³»çµ±------------------------------" << endl;
             cout << "\t\t\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << endl;
-            cout << " ¤½¥q¦WºÙ\t\t¥N½X\t¬y³qªÑ\t\t¥i°ÊªÑ\t\tµo¦æ»ù\t\t¤W¥«»ù\t\tª¬ºA" << endl;
+            cout << " å…¬å¸åç¨±\t\tä»£ç¢¼\tæµé€šè‚¡\t\tå¯å‹•è‚¡\t\tç™¼è¡Œåƒ¹\t\tä¸Šå¸‚åƒ¹\t\tç‹€æ…‹" << endl;
             for(int i=0; i < TOTALSTOCKS; i++)
             {
-                share[i].Display_Stock_Market_Information();//???????H??
+                share[i].Display_Stock_Market_Information();//é¡¯ç¤ºå¸‚å ´ä¿¡æ¯
             }
             cout << "\t\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << endl;
-            cout << " «ù¦³ªÑ²¼¥«­È\t¥i¥Î¸êª÷\tÁ`¸ê²£" << endl;
+            cout << " æŒæœ‰è‚¡ç¥¨å¸‚å€¼\tå¯ç”¨è³‡é‡‘\tç¸½è³‡ç”¢" << endl;
             cout << cust.Holding_Market_Value
                  << "\t\t" << cust.Balance
                  << "\t\t" << cust.Total_Assets << endl;
             cin.get();
-            cout << endl << "¿é¤J±z­nÁÊ¶RªºªÑ²¼¥N½X:";
+            cout << endl << "è¼¸å…¥æ‚¨è¦è³¼è²·çš„è‚¡ç¥¨ä»£ç¢¼:";
             cin >> code;
 
             while (code.size() > 5 || code.size() <= 0)
             {
-                cout << "ªÑ²¼¥N½X»İ¤p©ó5½X¤Î¦Ü¤Ö¦³¤@½X" << endl;
-                cout << "¿é¤J±z­nÁÊ¶RªºªÑ²¼¥N½X:";
+                cout << "è‚¡ç¥¨ä»£ç¢¼éœ€å°æ–¼5ç¢¼æˆ–è‡³å°‘æœ‰ä¸€ç¢¼" << endl;
+                cout << "ï¿½ï¿½Jï¿½zï¿½nï¿½Ê¶Rï¿½ï¿½ï¿½Ñ²ï¿½ï¿½Nï¿½X:";
                 cin >> code;
             }
 
-            if( code != "" )//·í¿é¤J¦^¨®®É³ø¿ù
+            if( code != "" )
             {
                 int i = 0;
                 flag = 0;
@@ -313,25 +248,25 @@ start:
                     {
                         if( share[i].Close_Selling == 1 )
                         {
-                            cout << "ªÑ²¼¤w¼È°±¥æ©ö!" << endl;
+                            cout << "è‚¡ç¥¨å·²æš«åœäº¤æ˜“!" << endl;
                             break;
                         }
                         else
                         {
-                            int Max_Buy_Stock_Volume;//²{ª÷¾lÃB¥i¶RªÑ¼Æ
-                            Max_Buy_Stock_Volume = int(cust.Balance/share[i].Stock_Listed_Price);//????
-                            cout << "±z³Ì¦h¥iÁÊ¶R¶q:" << Max_Buy_Stock_Volume << endl;
+                            int Max_Buy_Stock_Volume;//ç¾é‡‘é¤˜é¡å¯è²·è‚¡æ•¸
+                            Max_Buy_Stock_Volume = int(cust.Balance/share[i].Stock_Listed_Price);//å–æ•´
+                            cout << "æ‚¨æœ€å¤šå¯è³¼è²·é‡:" << Max_Buy_Stock_Volume << endl;
                             flag = 1;
-                            cout << "¿é¤J»İ­nÁÊ¶R¶q: ";
+                            cout << "è¼¸å…¥éœ€è¦è³¼è²·é‡: ";
                             cin >> volume;
-                            while(volume != (int)volume)//§PÂ_¿é¤J¬O§_¬°¾ã¼Æ
+                            while(volume != (int)volume)//åˆ¤æ–·è¼¸å…¥æ˜¯å¦ç‚ºæ•´æ•¸
                             {
-                                cout<<"¿é¤J¿ù»~,½Ğ­«·s¿é¤J(¾ã¼Æ)"<<endl;
+                                cout<<"è¼¸å…¥éŒ¯èª¤,è«‹é‡æ–°è¼¸å…¥(æ•´æ•¸)"<<endl;
                                 cin >> volume;
                             }
                             if( (share[i].Free_Stocks_Float >= volume) && (cust.Balance >= volume*share[i].Stock_Listed_Price) )
                             {
-                                //§ï°Ê¦U¼Æ¾Ú
+                                //æ”¹å‹•å„æ•¸æ“š
                                 cust.share_holding_value[i] += volume;
                                 cust.share_holding_name[i] = share[i].Stock_Name;
                                 cust.share_holding_code[i] = share[i].Stock_Code;
@@ -340,11 +275,11 @@ start:
                                 cust.Balance -= share[i].Stock_Listed_Price*volume;
                                 cust.Holding_Market_Value += share[i].Stock_Listed_Price*volume;
                                 system("cls");
-                                cout << "¥æ©ö§¹¦¨" << endl;
+                                cout << "äº¤æ˜“å®Œæˆ" << endl;
                                 cout << endl;
-                                cout << "\t\t\t------------------------------ªÑ²¼¨t²Î------------------------------" << endl;
+                                cout << "\t\t\t------------------------------è‚¡ç¥¨ç³»çµ±------------------------------" << endl;
                                 cout << "\t\t\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << endl;
-                                cout << " ¤½¥q¦WºÙ\t\t¥N½X\t¬y³qªÑ\t\t¥i°ÊªÑ\t\tµo¦æ»ù\t\t¤W¥«»ù\t\tª¬ºA" << endl;
+                                cout << " å…¬å¸åç¨±\t\tä»£ç¢¼\tæµé€šè‚¡\t\tå¯å‹•è‚¡\t\tç™¼è¡Œåƒ¹\t\tä¸Šå¸‚åƒ¹\t\tç‹€æ…‹" << endl;
                                 for(i=0; i < TOTALSTOCKS; i++)
                                 {
                                     cout << " " << share[i].Stock_Name
@@ -353,9 +288,9 @@ start:
                                          << "\t" << cust.share_holding_value[i]
                                          << "\t" << share[i].Stock_Issue_Price
                                          << "\t " << share[i].Stock_Listed_Price
-                                         << " \t " << (share[i].Close_Selling == 0 ?"¥¼°±¨é":"¤w°±¨é") << endl;
+                                         << " \t " << (share[i].Close_Selling == 0 ?"æœªåœåˆ¸":"å·²åœåˆ¸") << endl;
                                 }
-                                cout << "«ù¦³ªÑ²¼¥«­È\t¥i¥Î¸êª÷\t¥Ø«eÁ`¸ê²£"  << endl;
+                                cout << "æŒæœ‰è‚¡ç¥¨å¸‚å€¼\tå¯ç”¨è³‡é‡‘\tç›®å‰ç¸½è³‡ç”¢"  << endl;
                                 cout << cust.Holding_Market_Value
                                      << "\t\t" << cust.Balance
                                      << "\t\t" << cust.Total_Assets << endl;
@@ -366,9 +301,9 @@ start:
                             }
                             else if(share[i].Free_Stocks_Float <= volume)
                             {
-                                cout << share[i].Stock_Name << "ªº¥iÁÊªÑ²¼¼Æ¶q¤Ö©ó±z©Ò»İ­nªÑ²¼¼Æ¶q";
+                                cout << share[i].Stock_Name << "çš„å¯è³¼è‚¡ç¥¨æ•¸é‡å°‘æ–¼æ‚¨æ‰€éœ€è¦è‚¡ç¥¨æ•¸é‡";
                                 cout << endl;
-                                cout << "«ö¥ô·NÁäªğ¦^" << endl;
+                                cout << "æŒ‰ä»»æ„éµè¿”å›" << endl;
                                 cout << endl;
                                 getch();
                                 system("cls");
@@ -376,8 +311,8 @@ start:
                             }
                             else if(cust.Balance <= volume*share[i].Stock_Listed_Price)
                             {
-                                cout << "¥i¥Î¸êª÷¤£¨¬!";
-                                cout << "«ö¥ô·NÁäªğ¦^" << endl;
+                                cout << "å¯ç”¨è³‡é‡‘ä¸è¶³!";
+                                cout << "æŒ‰ä»»æ„éµè¿”å›" << endl;
                                 cout << endl;
                                 getch();
                                 system("cls");
@@ -391,8 +326,8 @@ start:
                         while(i == TOTALSTOCKS)
                         {
                             system("cls");
-                            cout << "¿é¤J¥N½X¿ù»~" << endl;
-                            cout << "«ö¥ô·NÁäªğ¦^" << endl;
+                            cout << "è¼¸å…¥ä»£ç¢¼éŒ¯èª¤" << endl;
+                            cout << "æŒ‰ä»»æ„éµè¿”å›" << endl;
                             goto start;
                         }
                     }
@@ -400,19 +335,19 @@ start:
             }
             else
             {
-                cout << "¿é¤J®æ¦¡¿ù»~" << endl;
-                cout << "«ö¥ô·NÁäªğ¦^" << endl;
+                cout << "è¼¸å…¥æ ¼å¼éŒ¯èª¤" << endl;
+                cout << "æŒ‰ä»»æ„éµè¿”å›" << endl;
             }
             cin.get();
             break;
         }
         case '2':
         {
-            //½æ¥XªÑ²¼
+            //è³£å‡ºè‚¡ç¥¨
             system("cls");
-            cout << "\t\t\t------------------------------ªÑ²¼¨t²Î------------------------------" << endl;
+            cout << "\t\t\t------------------------------è‚¡ç¥¨ç³»çµ±------------------------------" << endl;
             cout << "\t\t\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << endl;
-            cout << " ¤½¥q¦WºÙ\t\t¥N½X\t¬y³qªÑ\t\t¥i°ÊªÑ\t\tµo¦æ»ù\t\t¤W¥«»ù\t\tª¬ºA" << endl;
+            cout << " å…¬å¸åç¨±\t\tä»£ç¢¼\tæµé€šè‚¡\t\tå¯å‹•è‚¡\t\tç™¼è¡Œåƒ¹\t\tä¸Šå¸‚åƒ¹\t\tç‹€æ…‹" << endl;
             for(i=0; i < TOTALSTOCKS; i++)
             {
                 cout << " " << share[i].Stock_Name
@@ -421,18 +356,18 @@ start:
                      << "\t" << cust.share_holding_value[i]
                      << "\t" << share[i].Stock_Issue_Price
                      << "\t " << share[i].Stock_Listed_Price
-                     << " \t " << (share[i].Close_Selling == 0 ?"¥¼°±¨é":"¤w°±¨é") << endl;
+                     << " \t " << (share[i].Close_Selling == 0 ?"æœªåœåˆ¸":"å·²åœåˆ¸") << endl;
             }
             cout << "\t\t ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << endl;
-            cout << " «ù¦³ªÑ²¼¥«­È\t¥i¥Î¸êª÷\t¥Ø«eÁ`¸ê²£" << endl;
+            cout << " æŒæœ‰è‚¡ç¥¨å¸‚å€¼\tå¯ç”¨è³‡é‡‘\tç›®å‰ç¸½è³‡ç”¢" << endl;
             cout << cust.Holding_Market_Value << "\t\t" << cust.Balance << "\t\t" << cust. Total_Assets << endl;
             cin.get();
-            cout << endl << "¿é¤J½æ¥XªÑ²¼¥N½X: ";
+            cout << endl << "è¼¸å…¥è³£å‡ºè‚¡ç¥¨ä»£ç¢¼: ";
             code = "";
             while (code.size() > 5 || code.size() <= 0)
             {
-                cout << "ªÑ²¼¥N½XÀ³¤p©ó5½X¤Î¦Ü¤Ö¦³¤@½X" << endl;
-                cout << "¿é¤J½æ¥XªÑ²¼¥N½X: ";
+                cout << "è‚¡ç¥¨ä»£ç¢¼éœ€å°æ–¼5ç¢¼æˆ–è‡³å°‘æœ‰ä¸€ç¢¼" << endl;
+                cout << "è¼¸å…¥è³£å‡ºè‚¡ç¥¨ä»£ç¢¼: ";
                 cin >> code;
             }
 
@@ -446,17 +381,17 @@ start:
                     {
                         if( share[i].Close_Selling == 1 )
                         {
-                            cout << "ªÑ²¼¤w¼È°±¥æ©ö!" << endl;
+                            cout << "è‚¡ç¥¨å·²æš«åœäº¤æ˜“!" << endl;
                             break;
                         }
                         else
                         {
                             flag = 1;
-                            cout << "¿é¤J½æ¥X¶q: ";
+                            cout << "è¼¸å…¥è³£å‡ºé‡: ";
                             cin >> volume;
                             while(volume != (int)volume)//?P?_??J?O?_?????
                             {
-                                cout<<"¿é¤J¿ù»~,½Ğ­«·s¿é¤J(¾ã¼Æ)"<<endl;
+                                cout<<"è¼¸å…¥éŒ¯èª¤,è«‹é‡æ–°è¼¸å…¥(æ•´æ•¸)"<<endl;
                                 cin >> volume;
                             }
                             if(cust.share_holding_value[i] >= volume)
@@ -466,7 +401,7 @@ start:
                                 cust.Balance += share[ i].Stock_Listed_Price*volume;
                                 cust.Holding_Market_Value -= share[i].Stock_Listed_Price*volume;
                                 system("cls");
-                                cout << "¥æ©ö¦¨¥\!" << endl;
+                                cout << "äº¤æ˜“æˆåŠŸ!" << endl;
                                 cout << endl;
                                 ofstream data(cust.Customer_Name,ios::binary);
                                 data.write((char*)(&cust),sizeof(cust));
@@ -474,9 +409,9 @@ start:
                             }
                             else
                             {
-                                cout << "±z¨S¦³¨¬°÷ªÑ²¼¥i½æ¥X";
-                                cout << "©Î±z¨S¦³ÁÊ¶R¦¹ªÑ²¼" << endl;
-                                cout << "«ö¥ô·NÁäªğ¦^" << endl;
+                                cout << "æ‚¨æ²’æœ‰è¶³å¤ è‚¡ç¥¨å¯è³£å‡º";
+                                cout << "æˆ–æ‚¨æ²’æœ‰è³¼è²·æ­¤è‚¡ç¥¨" << endl;
+                                cout << "æŒ‰ä»»æ„éµè¿”å›" << endl;
                                 getch();
                                 break;
                             }
@@ -489,8 +424,8 @@ start:
                         while(i == TOTALSTOCKS)
                         {
                             system("cls");
-                            cout << "±z¨S¦³ÁÊ¶R¸ÓªÑ²¼©Î±z¿é¤J¿ù»~" << endl;
-                            cout << "«ö¥ô·NÁäªğ¦^";
+                            cout << "æ‚¨æ²’æœ‰è³¼è²·è©²è‚¡ç¥¨æˆ–æ‚¨è¼¸å…¥éŒ¯èª¤" << endl;
+                            cout << "æŒ‰ä»»æ„éµè¿”å›";
                             getch();
                             goto start;
                         }
@@ -499,22 +434,22 @@ start:
             }
             else
             {
-                cout << endl << "¿é¤J¿ù»~!";
+                cout << endl << "è¼¸å…¥éŒ¯èª¤!";
             }
             cin.get();
             break;
         }
-        case '3'://«ì´_ªÑ²¼¥æ©ö
+        case '3'://æ¢å¾©è‚¡ç¥¨äº¤æ˜“
         {
             if(cust.Administrator == 1)
             {
                 system("cls");
-                cout << "\t\t\t------------------------------ªÑ²¼¨t²Î------------------------------" << endl;
+                cout << "\t\t\t------------------------------è‚¡ç¥¨ç³»çµ±------------------------------" << endl;
                 cout << "\t\t\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << endl;
-                cout << " ¤½¥q¦WºÙ\t\t¥N½X\t¬y³qªÑ\t\t¥i°ÊªÑ\t\tµo¦æ»ù\t\t¤W¥«»ù\t\tª¬ºA" << endl;
+                cout << " å…¬å¸åç¨±\t\tä»£ç¢¼\tæµé€šè‚¡\t\tå¯å‹•è‚¡\t\tç™¼è¡Œåƒ¹\t\tä¸Šå¸‚åƒ¹\t\tç‹€æ…‹" << endl;
                 for(int i=0; i < TOTALSTOCKS; i++)
                 {
-                    share[i].Display_Stock_Market_Information();//Åã¥Ü¥«³õ«H®§
+                    share[i].Display_Stock_Market_Information();//é¡¯ç¤ºå¸‚å ´ä¿¡æ¯
                 }
                 cin.get();
                 temp.Start_Selling_Stock(share);
@@ -522,45 +457,45 @@ start:
             }
             else
             {
-                cout << "±zµLÅv«ì´_ªÑ²¼!" << endl;
+                cout << "æ‚¨ç„¡æ¬Šæ¢å¾©è‚¡ç¥¨!" << endl;
                 getch();
                 break;
             }
         }
-        case '4'://??????
+        case '4'://åœåˆ¸è‚¡ç¥¨
         {
             if( cust.Administrator == 1 )
             {
                 system("cls");
-                cout << "\t\t\t------------------------------ªÑ²¼¨t²Î------------------------------" << endl;
+                cout << "\t\t\t------------------------------è‚¡ç¥¨ç³»çµ±------------------------------" << endl;
                 cout << "\t\t\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << endl;
-                cout << " ¤½¥q¦WºÙ\t\t¥N½X\t¬y³qªÑ\t\t¥i°ÊªÑ\t\tµo¦æ»ù\t\t¤W¥«»ù\t\tª¬ºA" << endl;
+                cout << " å…¬å¸åç¨±\t\tä»£ç¢¼\tæµé€šè‚¡\t\tå¯å‹•è‚¡\t\tç™¼è¡Œåƒ¹\t\tä¸Šå¸‚åƒ¹\t\tç‹€æ…‹" << endl;
                 for(int i=0; i < TOTALSTOCKS; i++)
                 {
-                    share[i].Display_Stock_Market_Information();//Åã¥Ü¥«³õ«H®§
+                    share[i].Display_Stock_Market_Information();//é¡¯ç¤ºå¸‚å ´ä¿¡æ¯
                 }
                 cin.get();
-                temp.Close_Selling_Stock(share);//¶i¦æ
+                temp.Close_Selling_Stock(share);//é€²è¡Œ
                 break;
             }
             else
             {
-                cout << "±zµLÅv±¾°_ªÑ²¼!" << endl ;
+                cout << "æ‚¨ç„¡æ¬Šæ›èµ·è‚¡ç¥¨!" << endl ;
                 getch();
                 break;
             }
         }
-        case '5'://­×§ïªÑ²¼
+        case '5'://ä¿®æ”¹è‚¡ç¥¨
         {
             if( cust.Administrator == 1 )
             {
                 system("cls");
-                cout << "\t\t\t------------------------------ªÑ²¼¨t²Î------------------------------" << endl;
+                cout << "\t\t\t------------------------------è‚¡ç¥¨ç³»çµ±------------------------------" << endl;
                 cout << "\t\t\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << endl;
-                cout << " ¤½¥q¦WºÙ\t\t¥N½X\t¬y³qªÑ\t\t¥i°ÊªÑ\t\tµo¦æ»ù\t\t¤W¥«»ù\t\tª¬ºA" << endl;
+                cout << " å…¬å¸åç¨±\t\tä»£ç¢¼\tæµé€šè‚¡\t\tå¯å‹•è‚¡\t\tç™¼è¡Œåƒ¹\t\tä¸Šå¸‚åƒ¹\t\tç‹€æ…‹" << endl;
                 for(int i=0; i < TOTALSTOCKS; i++)
                 {
-                    share[i].Display_Stock_Market_Information();//Åã¥Ü¥«³õ«H®§
+                    share[i].Display_Stock_Market_Information();//é¡¯ç¤ºå¸‚å ´ä¿¡æ¯
                 }
                 cin.get();
                 temp.Modify_Stock(share);
@@ -568,16 +503,16 @@ start:
             }
             else
             {
-                cout << "±zµLÅv­­­×§ïªÑ²¼!" << endl;
+                cout << "æ‚¨ç„¡æ¬Šé™åœåˆ¸è‚¡ç¥¨!" << endl;
                 getch();
                 break ;
             }
         }
-        case '6'://¬d¬İ«H®§
+        case '6'://æŸ¥çœ‹ä¿¡æ¯
             system("cls");
-            cout << "\t\t\t******************************ªÑ²¼¨t²Î******************************" << endl;
+            cout << "\t\t\t******************************è‚¡ç¥¨ç³»çµ±******************************" << endl;
             cout << "\t\t\t--------------------------------------------------------------------" << endl;
-            cout << " ¤½¥q¦WºÙ\t\t¥N½X\t¬y³qªÑ\t\t¥i°ÊªÑ\t\tµo¦æ»ù\t\t¤W¥«»ù\t\tª¬ºA" << endl;
+            cout << " å…¬å¸åç¨±\t\tä»£ç¢¼\tæµé€šè‚¡\t\tå¯å‹•è‚¡\t\tç™¼è¡Œåƒ¹\t\tä¸Šå¸‚åƒ¹\t\tç‹€æ…‹" << endl;
             for(int i=0; i<TOTALSTOCKS; i++)
             {
                 cout << " "   << share[i].Stock_Name
@@ -586,11 +521,11 @@ start:
                      << "\t\t" << cust.share_holding_value[i]
                      << "\t\t" << share[i].Stock_Issue_Price
                      << "\t\t" << share[i].Stock_Listed_Price
-                     << "\t\t" << (share[i].Close_Selling == 0?"¥¼°±¨é":"¤w°±¨é") << endl;
+                     << "\t\t" << (share[i].Close_Selling == 0?"æœªåœåˆ¸":"å·²åœåˆ¸") << endl;
 
             }
             cout << "\t\t\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << endl;
-            cout << " «ù¦³ªÑ²¼¥«­È\t\t¥i¥Î¸êª÷\tÁ`¸ê²£"<<endl;
+            cout << " æŒæœ‰è‚¡ç¥¨å¸‚å€¼\t\tå¯ç”¨è³‡é‡‘\tç¸½è³‡ç”¢"<<endl;
             cout << " " << cust.Holding_Market_Value
                  << "\t\t\t" << cust.Balance
                  << "\t\t" << cust.Total_Assets << endl;
@@ -605,14 +540,14 @@ void Interface(vector <Stock> share, time_t startTime)
 {
     char choice;
     system("cls");
-    cout << "***************ªÑ²¼¥æ©ö¨t²Î***************" << endl;
+    cout << "***************è‚¡ç¥¨äº¤æ˜“ç³»çµ±***************" << endl;
     cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << endl;
-    cout << "¶i¤JªÑ²¼¥æ©ö¥«³õ................[1]" << endl;
-    cout << "µn³°¥Î¤á........................[2]" << endl;
-    cout << "µù¥U·s¥Î¤á......................[3]" << endl;
-    cout << "°h¥X¥»¨t²Î......................[0]" << endl;
+    cout << "é€²å…¥è‚¡ç¥¨äº¤æ˜“å¸‚å ´................[1]" << endl;
+    cout << "ç™»é™¸ç”¨æˆ¶........................[2]" << endl;
+    cout << "è¨»å†Šæ–°ç”¨æˆ¶......................[3]" << endl;
+    cout << "é€€å‡ºæœ¬ç³»çµ±......................[0]" << endl;
     cout << endl << endl;
-    cout << endl << "½Ğ¿ï¾Ü:";
+    cout << endl << "è«‹é¸æ“‡:";
     cin >> choice;
     switch (choice)
     {
@@ -632,14 +567,14 @@ void Switch_choice(vector <Stock> share, char choice, time_t startTime)
     char pass_word[10];
     switch(choice)
     {
-    case '0': //´N°h¥X
+    case '0': //å°±é€€å‡º
     {
         system("cls");
-        cout << "·PÁÂ¨Ï¥Î***************ªÑ²¼¥æ©ö¨t²Î***************" << endl;
-        cout << "\t¤£­n¦A¨£!!!!!!!!!!!!!!!" << endl;
+        cout << "æ„Ÿè¬ä½¿ç”¨***************è‚¡ç¥¨äº¤æ˜“ç³»çµ±***************" << endl;
+        cout << "\tä¸è¦å†è¦‹!!!!!!!!!!!!!!!" << endl;
         exit(0);
     }
-    case '1': //¶i¤JªÑ²¼¥æ©ö¥«³õ
+    case '1': //é€²å…¥è‚¡ç¥¨äº¤æ˜“å¸‚å ´
     {
         time_t endtime = time(NULL);
         for (int j=0; j<(endtime - startTime) / 10; j++)
@@ -647,12 +582,12 @@ void Switch_choice(vector <Stock> share, char choice, time_t startTime)
             for (int i=0; i<TOTALSTOCKS; i++)
             {
                 srand(time(NULL));
-                double x = rand() % 21 -10; // x???d??[-10, 10]
+                double x = rand() % 21 -10; //[-10, 10]
                 double result = x * 0.01;
                 
                 double original = share[i].Stock_Listed_Price;
                 share[i].Stock_Listed_Price = (1+result) * share[i].Stock_Listed_Price;
-                if (original < share[i].Stock_Listed_Price)//º¦
+                if (original < share[i].Stock_Listed_Price)//æ¼²
                 {
                     share[i].color = 12;
                 }
@@ -665,43 +600,43 @@ void Switch_choice(vector <Stock> share, char choice, time_t startTime)
         }
 
         system("cls");
-        cout << "\n\n\t\t***************ªÑ²¼¥æ©ö¥«³õ**************" << endl;
+        cout << "\n\n\t\t***************è‚¡ç¥¨äº¤æ˜“å¸‚å ´**************" << endl;
         cout << "\t\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~`~~~~~~~~~~~~~~~~" << endl;
-        cout << " ¤½¥q¦WºÙ\t\t¥N½X\t¬y³qªÑ\t\t¥i°ÊªÑ\t\tµo¦æ»ù\t\t¤W¥«»ù\t\tª¬ºA" << endl;
+        cout << " å…¬å¸åç¨±\t\tä»£ç¢¼\tæµé€šè‚¡\t\tå¯å‹•è‚¡\t\tç™¼è¡Œåƒ¹\t\tä¸Šå¸‚åƒ¹\t\tç‹€æ…‹" << endl;
         for(int i=0; i < TOTALSTOCKS; i++)
         {
-            share[i].Display_Stock_Market_Information();//Åã¥Ü¥«³õ«H®§
+            share[i].Display_Stock_Market_Information();//é¡¯ç¤ºå¸‚å ´è¨Šæ¯
         }
         cin.get();
         getch();
         main();
         break;
     }
-    case '2'://µn³°¥Î¤á
+    case '2'://ç™»é™¸ç”¨æˆ¶
     {
         system("cls");
-        cout << "\n\n\t\t***************ªÑ²¼¥æ©ö¥«³õ**************" << endl;
+        cout << "\n\n\t\t***************è‚¡ç¥¨äº¤æ˜“å¸‚å ´**************" << endl;
         cout << "\t\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~`~~~~~~~~~~~~~~~~" << endl;
-        cout << "¿é¤J±b¸¹:";
+        cout << "è¼¸å…¥å¸³è™Ÿ:";
         cin >> cust.Customer_Name;
         cin.get();
-        ifstream read_customer(cust.Customer_Name);//Åª¤w¦³¼Æ¾Ú//­n¦A­×§ï
-        while( !read_customer.eof() )//§PÂ_¬O§_¦³°O¿ı
+        ifstream read_customer(cust.Customer_Name);//è®€å·²æœ‰æ•¸æ“š//è¦å†ä¿®æ”¹
+        while( !read_customer.eof() )//åˆ¤æ–·æ˜¯å¦æœ‰è¨˜éŒ„
         {
             read_customer.read((char*)(&cust),sizeof(cust));
             if( read_customer.fail() )
             {
                 cout << endl;
-                cout << "¸ê®Æ®w¨S¦³°O¿ı" << endl;
+                cout << "è³‡æ–™åº«æ²’æœ‰è¨˜éŒ„" << endl;
                 getch();
                 main();
             }
             else
             {
-                cout << "¥Î¤á±K½X:";
+                cout << "ç”¨æˆ¶å¯†ç¢¼:";
                 char input;
                 int i=0;
-                cout << "¿é¤J±K½X:"<<endl;
+                cout << "è¼¸å…¥å¯†ç¢¼:"<<endl;
                 cout.flush();
                 input = getch();
                 while(input != 13)
@@ -721,7 +656,7 @@ void Switch_choice(vector <Stock> share, char choice, time_t startTime)
                 }
                 else
                 {
-                    cout << endl << "¿é¤J¿ù»~!";
+                    cout << endl << "è¼¸å…¥éŒ¯èª¤!";
                 }
                 read_customer.close();
                 cin.get();
@@ -729,10 +664,10 @@ void Switch_choice(vector <Stock> share, char choice, time_t startTime)
             }
         }
     }
-    case '3':  //µù¥U·s¥Î¤á
+    case '3':  //è¨»å†Šæ–°ç”¨æˆ¶
     {
         system("cls");
-        cout << "µù¥U·s¥Î¤á" << endl;
+        cout << "è¨»å†Šæ–°ç”¨æˆ¶" << endl;
         cout << "~~~~~~~~~~" << endl;
         cust.Register(&cust);
         ofstream write_customer(cust.Customer_Name);
@@ -754,53 +689,53 @@ void Stock::Display_Stock_Market_Information()
          << "\t\t" << cust.share_holding_value
          << "\t\t" << Stock_Issue_Price
          << "\t\t" << Stock_Listed_Price
-         << "\t\t" << (Close_Selling == 0?"¥¼°±¨é":"¤w°±¨é") << endl;
+         << "\t\t" << (Close_Selling == 0?"æœªåœåˆ¸":"å·²åœåˆ¸") << endl;
 }
 
-void Stock::Close_Selling_Stock(vector <Stock> share)//¼È°±ªÑ²¼¥æ©ö
+void Stock::Close_Selling_Stock(vector <Stock> share)//æš«åœè‚¡ç¥¨äº¤æ˜“
 {
     char input;
     string share_code = "";
-    cout<<"¿é¤J±z­n°±¨éªºªÑ²¼¥N½X:";
+    cout<<"è¼¸å…¥æ‚¨è¦åœåˆ¸çš„è‚¡ç¥¨ä»£ç¢¼:";
     cin >> share_code;
     while (share_code.size() > 5 || share_code.size() <= 0)
     {
-        cout << "ªÑ²¼¥N½X»İ¤p©ó5¤Î¦Ü¤Ö¦³¤@½X" << endl;
-        cout << "¿é¤J±z­n°±¨éªºªÑ²¼¥N½X:";
+        cout << "è‚¡ç¥¨ä»£ç¢¼éœ€å°æ–¼5ç¢¼æˆ–è‡³å°‘æœ‰ä¸€ç¢¼" << endl;
+        cout << "è¼¸å…¥æ‚¨è¦åœåˆ¸çš„è‚¡ç¥¨ä»£ç¢¼:";
         cin >> share_code;
     }
     int i=0;
     flag = 0;
-    if( share_code != "")//·í¿é¤J¦^¨®®É³ø¿ù
+    if( share_code != "")
     {
         while( (i<TOTALSTOCKS) && (!flag) )
         {
             if(share[i].Stock_Code == share_code)
             {
                 flag = 1;
-                cout << "½T©w(y/n)";
+                cout << "ç¢ºå®š(y/n)";
                 cin >> input;
                 if(input == 'y')
                 {
                     share[i].Close_Selling = 1;
                     Save(share);
-                    cout << "¤w°±¨é" << endl;
+                    cout << "å·²åœåˆ¸" << endl;
                     cout << endl;
                     break;
                 }
                 else if(input=='n')
                 {
-                    cout << "¨B«µ¨ú®ø!" << endl;
+                    cout << "æ­¥å¥å–æ¶ˆ!" << endl;
                 }
                 else
                 {
-                    cout << "¿é¤J¿ù»~!" <<endl;
+                    cout << "è¼¸å…¥éŒ¯èª¤!" <<endl;
                 }
             }
             else i++;
             if(i == TOTALSTOCKS)
             {
-                cout << "±z¿é¤Jªº¥N½X¿ù»~!" << endl;
+                cout << "æ‚¨è¼¸å…¥çš„ä»£ç¢¼éŒ¯èª¤!" << endl;
                 break;
             }
         }
@@ -808,16 +743,16 @@ void Stock::Close_Selling_Stock(vector <Stock> share)//¼È°±ªÑ²¼¥æ©ö
     getch();
 }
 
-void Stock::Start_Selling_Stock(vector <Stock> share)//«ì´_ªÑ²¼¥æ©ö
+void Stock::Start_Selling_Stock(vector <Stock> share)//æ¢å¾©è‚¡ç¥¨äº¤æ˜“
 {
     char input;
     string share_code = "";
-    cout << "¿é¤J±z­n«ì´_¥æ©öªºªÑ²¼¥N½X:";
+    cout << "è¼¸å…¥æ‚¨è¦æ¢å¾©äº¤æ˜“çš„è‚¡ç¥¨ä»£ç¢¼:";
     cin >> share_code;
     while (share_code.size() > 5 || share_code.size() <= 0)
     {
-        cout << "ªÑ²¼¥N½X»İ¤p©ó5½X©Î¦Ü¤Ö¤j©ó¤@½X" << endl;
-        cout << "¿é¤J±z­n«ì´_¥æ©öªºªÑ²¼¥N½X:";
+        cout << "è‚¡ç¥¨ä»£ç¢¼éœ€å°æ–¼5ç¢¼æˆ–è‡³å°‘æœ‰ä¸€ç¢¼" << endl;
+        cout << "è¼¸å…¥æ‚¨è¦åœåˆ¸çš„è‚¡ç¥¨ä»£ç¢¼:";
         cin >> share_code;
     }
     int i= 0;
@@ -827,47 +762,47 @@ void Stock::Start_Selling_Stock(vector <Stock> share)//«ì´_ªÑ²¼¥æ©ö
         if( share[i].Stock_Code == share_code )
         {
             flag = 1;
-            cout << "½T©w(y/n)";
+            cout << "ç¢ºå®š(y/n)";
             cin >> input;
             if(input == 'y')
             {
                 share[i].Close_Selling = 0;
                 Save(share);
-                cout << "¤w«ì´_" << endl;
+                cout << "å·²æ¢å¾©" << endl;
                 cout << endl;
                 break;
             }
             else if(input == 'n')
             {
-                cout << "¨BÆJ¨ú®ø!" << endl;
+                cout << "æ­¥é©Ÿå–æ¶ˆ!" << endl;
             }
             else
             {
-                cout << "¿é¤J¿ù»~!" <<endl;
+                cout << "è¼¸å…¥éŒ¯èª¤!" <<endl;
             }
         }
         else i++;
         if(i == TOTALSTOCKS)
         {
-            cout << "±z¿é¤Jªº¥N½X¿ù»~!" << endl;
+            cout << "æ‚¨è¼¸å…¥çš„ä»£ç¢¼éŒ¯èª¤!" << endl;
             break;
         }
     }
     getch();
 }
 
-void Stock::Modify_Stock(vector <Stock> t)//½Õ¾ã¸ê°T
+void Stock::Modify_Stock(vector <Stock> t)//èª¿æ•´è³‡è¨Š
 {
     flag = 0;
     int i=0;
     string share_name = "", share_code = "";
     cin.clear();
-    cout << "¿é¤J­ì¤½¥q¥N½X:" << endl;
+    cout << "è¼¸å…¥åŸå…¬å¸ä»£ç¢¼" << endl;
     cin >> share_code;
     while (share_code.size() > 5 || share_code.size() <= 0)
     {
-        cout << "ªÑ²¼¥N½X»İ¤p©ó5½X¤Î¦Ü¤Ö¦³¤@½X" << endl;
-        cout << "¿é¤J­ì¤½¥q¥N½X:";
+        cout << "è‚¡ç¥¨ä»£ç¢¼éœ€å°æ–¼5ç¢¼æˆ–è‡³å°‘æœ‰ä¸€ç¢¼" << endl;
+        cout << "è¼¸å…¥æ‚¨è¦åœåˆ¸çš„è‚¡ç¥¨ä»£ç¢¼:";
         cin >> share_code;
     }
     if( share_code != "" )
@@ -878,30 +813,30 @@ void Stock::Modify_Stock(vector <Stock> t)//½Õ¾ã¸ê°T
             {
                 if(t[i].Close_Selling == 1)
                 {
-                    cout<<"¼È°±ªÑ²¼¥æ©ö!"<<endl;
+                    cout<<"æš«åœè‚¡ç¥¨äº¤æ˜“!"<<endl;
                     break;
                 }
                 else
                 {
                     cin.clear();
                     flag = 1;
-                    cout << "¿é¤J·sªÑ¦W(20¦r¤¸¥H¤º):" << endl;
+                    cout << "è¼¸å…¥æ–°è‚¡å(20å­—å…ƒä»¥å…§):" << endl;
                     cin >> share_name;
                     while (share_name.size() > 20 || share_name.size() <= 0)
                     {
-                        cout << "ªÑ²¼¦WºÙ»İ¤p©ó20¦r¤¸¤Î¤j©ó¤@¦r¤¸" << endl;
-                        cout << "¿é¤J·sªÑ¦W(20¦r¤¸¥H¤º):";
+                        cout << "è‚¡ç¥¨åç¨±éœ€å°æ–¼20å­—å…ƒæˆ–è‡³å°‘æœ‰ä¸€å€‹å­—å…ƒ" << endl;
+                        cout << "è¼¸å…¥æ–°è‚¡å(20å­—å…ƒä»¥å…§):";
                         cin >> share_name;
                     }
                     t[i].Stock_Name = share_name;
                     cin.get();
-                    cout << "¿é¤J·sªÑ²¼¥N½X(5½X¥H¤º):";
+                    cout << "è¼¸å…¥æ–°ä»£ç¢¼(5ç¢¼ä»¥å…§):";
                     cout << endl;
                     cin >> share_code;
                     while (share_code.size() > 5 || share_code.size() <= 0)
                     {
-                        cout << "ªÑ²¼¥N½X»İ¤p©ó5½X¤Î¤j©ó¤@½X" << endl;
-                        cout << "¿é¤J·sªÑ²¼¥N½X(5½X¥H¤º):";
+                        cout << "è‚¡ç¥¨ä»£ç¢¼éœ€å°æ–¼5ç¢¼æˆ–è‡³å°‘æœ‰ä¸€ç¢¼" << endl;
+                        cout << "è¼¸å…¥æ–°ä»£ç¢¼(5ç¢¼ä»¥å…§):";
                         cin >> share_code;
                     }
                     t[i].Stock_Code = share_code;
@@ -914,15 +849,15 @@ void Stock::Modify_Stock(vector <Stock> t)//½Õ¾ã¸ê°T
             }
             if(i==TOTALSTOCKS)
             {
-                cout << "ªÑ²¼¤£¦s¦b!" << endl;
-                cout << "«ö¥ô·NÁäªğ¦^..." << endl;
+                cout << "è‚¡ç¥¨ä¸å­˜åœ¨!" << endl;
+                cout << "æŒ‰ä»»æ„éµè¿”å›..." << endl;
                 getch();
             }
         }
     }
     else
     {
-       cout << "¿é¤J¿ù»~!";
+       cout << "è¼¸å…¥éŒ¯èª¤!";
     }
 }
 
