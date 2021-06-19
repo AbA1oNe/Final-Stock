@@ -44,11 +44,11 @@ public:
         Close_Selling = close;
         color = 3;
     }
-    void Close_Selling_Stock(vector <Stock>&); //�Ȱ��Ѳ����
-    void Start_Selling_Stock(vector <Stock>&); //��_�Ѳ����
+    void Close_Selling_Stock(vector <Stock>&, vector <Customer>, int); //�Ȱ��Ѳ����
+    void Start_Selling_Stock(vector <Stock>&, vector <Customer>, int); //��_�Ѳ����
     void Modify_Stock(vector <Stock>&);//�ק�Ѳ����(�޲z��)
 
-    friend void Display_Stock_Market_Information(vector <Stock>, int);//��ܫH��
+    friend void Display_Stock_Market_Information(vector <Stock>, int, double[]);//��ܫH��
     void Switch_choice(vector <Stock>, char ,vector <Customer>);//�\����
     friend void StockWrite(vector <Stock>);
 };
@@ -267,6 +267,7 @@ start:
         case '1': //�R�J
         {
             time_t endtime = time(NULL);
+            double floatRange[10] = {0};
             if (endtime - startTime >= 1)
             {
                 for (int i=0; i<TOTALSTOCKS; i++)
@@ -274,6 +275,7 @@ start:
                     srand(time(NULL));
                     double x = rand() % 21 -10; //[-10, 10]
                     double result = x * 0.01;
+                    floatRange[i] = result;
 
                     double original = share[i].currentPrice;
                     share[i].currentPrice = (1+result) * share[i].currentPrice;
@@ -284,6 +286,9 @@ start:
                     else if (original > share[i].currentPrice)
                     {
                         share[i].color = 2;
+                    }
+                    else {
+                        share[i].color = 3;
                     }
                     Sleep(200);
                 }
@@ -301,7 +306,7 @@ start:
             << "Stock Listed Price" << setw(30) << "Current Price" << setw(30) << "Status" <<endl;
             for(int i=0; i < TOTALSTOCKS; i++)
             {
-                Display_Stock_Market_Information(share, i);//��ܥ����H��
+                Display_Stock_Market_Information(share, i, floatRange);//��ܥ����H��
             }
             for(int i=0; i<237;i++) {
             cout<< "~";
@@ -309,15 +314,39 @@ start:
             cout << right << setw(20) << "Market Value of Holding Stock" << setw(10) << "Money" << setw(20) << "Total Assets"<< endl;
             cout << right << setw(15) << cus[index].Holding_Market_Value << setw(22) << cus[index].Balance
                  << setw(17) << cus[index].Total_Assets << endl;
+            
+            cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << endl;
+            cout << "\t\t\t\tStock you own" << endl << endl;
+            cout << right << setw(20) << "Name" << setw(20) << "Code" << setw(20) << "Shares" << endl;
+
+            for (int j=0; j<TOTALSTOCKS; j++)
+            {
+                if (cus[index].share_holding_name[j] == "$")//this means no name in the array
+                {
+                    continue;
+                }
+                else {
+                    cout << right << setw(20) << cus[index].share_holding_name[j] << setw(20)
+                    << cus[index].share_holding_code[j] << setw(20) << cus[index].share_holding_value[j] << endl;
+                }
+            }
             cin.get();
-            cout << endl << "Enter the stock code you want to buy:";
+            cout << endl << "Enter the stock code you want to buy: (Enter 0 to return)";
             cin >> code;
+            if (code == "0")
+            {
+                goto start;
+            }
 
             while (code.size() > 5 || code.size() <= 0)
             {
                 cout << "Stock code has to be less than 5 characters or 1 above" << endl;
-                cout << "Enter the stock code you want to buy:";
+                cout << "Enter the stock code you want to buy: (Enter 0 to return)";
                 cin >> code;
+                if (code == "0")
+                {
+                    goto start;
+                }
             }
 
             if( code != "" )
@@ -424,7 +453,34 @@ start:
         }
         case '2':
         {
-            //��X�Ѳ�
+            time_t endtime = time(NULL);
+            double floatRange[10] = {0};
+            if (endtime - startTime >= 1)
+            {
+                for (int i=0; i<TOTALSTOCKS; i++)
+                {
+                    srand(time(NULL));
+                    double x = rand() % 21 -10; //[-10, 10]
+                    double result = x * 0.01;
+                    floatRange[i] = result;
+
+                    double original = share[i].currentPrice;
+                    share[i].currentPrice = (1+result) * share[i].currentPrice;
+                    if (original < share[i].currentPrice)//increase
+                    {
+                        share[i].color = 1;
+                    }
+                    else if (original > share[i].currentPrice)
+                    {
+                        share[i].color = 2;
+                    }
+                    else {
+                        share[i].color = 3;
+                    }
+                    Sleep(200);
+                }
+            }
+            startTime = time(NULL);
             system("cls");
             for(int i=0; i<100;i++) {
                 cout<< " ";
@@ -437,7 +493,7 @@ start:
             << "Stock Listed Price" << setw(30) << "Current Price" << setw(30) << "Status" <<endl;
             for(int i=0; i < TOTALSTOCKS; i++)
             {
-                Display_Stock_Market_Information(share, i);//��ܥ����H��
+                Display_Stock_Market_Information(share, i, floatRange);//��ܥ����H��
             }
             for(int i=0; i<237;i++) {
             cout<< "~";
@@ -445,21 +501,42 @@ start:
             cout << right << setw(20) << "Market Value of Holding Stock" << setw(10) << "Money" << setw(20) << "Total Assets"<< endl;
             cout << right << setw(15) << cus[index].Holding_Market_Value << setw(22) << cus[index].Balance
                  << setw(17) << cus[index].Total_Assets << endl;
-            /*cout << "\t\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << endl;
-            cout << " Market Value of Holding Stock\tMoney\tTotal Assets" << endl;
-            cout << cus[index].Holding_Market_Value
-                 << "\t\t" << cus[index].Balance
-                 << "\t\t" << cus[index].Total_Assets << endl;*/
+            
+
+            cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << endl;
+            cout << "\t\t\t\tStock you own" << endl << endl;
+            cout << right << setw(20) << "Name" << setw(20) << "Code" << setw(20) << "Shares" << endl;
+
+            for (int j=0; j<TOTALSTOCKS; j++)
+            {
+                if (cus[index].share_holding_name[j] == "$")//this means no name in the array
+                {
+                    continue;
+                }
+                else {
+                    cout << right << setw(20) << cus[index].share_holding_name[j] << setw(20)
+                    << cus[index].share_holding_code[j] << setw(20) << cus[index].share_holding_value[j] << endl;
+                }
+            }
             cin.get();
 
             cout << endl << "Enter the stock code you want to sell: ";
             code = "";
             cin >> code;
+            if (code == "0")
+            {
+                goto start;
+            }
+
             while (code.size() > 5 || code.size() <= 0)
             {
                 cout << "Stock code has to be less than 5 characters or 1 above" << endl;
-                cout << "Enter the stock code you want to sell:";
+                cout << "Enter the stock code you want to sell: (Enter 0 to return)";
                 cin >> code;
+                if (code == "0")
+                {
+                    goto start;
+                }
             }
 
             if(code != "")
@@ -531,6 +608,34 @@ start:
         }
         case '3'://��_�Ѳ����
         {
+            time_t endtime = time(NULL);
+            double floatRange[10] = {0};
+            if (endtime - startTime >= 1)
+            {
+                for (int i=0; i<TOTALSTOCKS; i++)
+                {
+                    srand(time(NULL));
+                    double x = rand() % 21 -10; //[-10, 10]
+                    double result = x * 0.01;
+                    floatRange[i] = result;
+
+                    double original = share[i].currentPrice;
+                    share[i].currentPrice = (1+result) * share[i].currentPrice;
+                    if (original < share[i].currentPrice)//increase
+                    {
+                        share[i].color = 1;
+                    }
+                    else if (original > share[i].currentPrice)
+                    {
+                        share[i].color = 2;
+                    }
+                    else {
+                        share[i].color = 3;
+                    }
+                    Sleep(200);
+                }
+            }
+            startTime = time(NULL);
             Stock temp;
             if(cus[index].Administrator == 1)
             {
@@ -546,10 +651,10 @@ start:
                 << "Stock Listed Price" << setw(30) << "Current Price" << setw(30) << "Status" <<endl;
                 for(int i=0; i < TOTALSTOCKS; i++)
                 {
-                    Display_Stock_Market_Information(share, i);//��ܥ����H��
+                    Display_Stock_Market_Information(share, i, floatRange);//��ܥ����H��
                 }
                 cin.get();
-                temp.Start_Selling_Stock(share);
+                temp.Start_Selling_Stock(share, cus, index);
                 break;
             }
             else
@@ -561,6 +666,34 @@ start:
         }
         case '4'://����Ѳ�
         {
+            time_t endtime = time(NULL);
+            double floatRange[10] = {0};
+            if (endtime - startTime >= 1)
+            {
+                for (int i=0; i<TOTALSTOCKS; i++)
+                {
+                    srand(time(NULL));
+                    double x = rand() % 21 -10; //[-10, 10]
+                    double result = x * 0.01;
+                    floatRange[i] = result;
+
+                    double original = share[i].currentPrice;
+                    share[i].currentPrice = (1+result) * share[i].currentPrice;
+                    if (original < share[i].currentPrice)//increase
+                    {
+                        share[i].color = 1;
+                    }
+                    else if (original > share[i].currentPrice)
+                    {
+                        share[i].color = 2;
+                    }
+                    else {
+                        share[i].color = 3;
+                    }
+                    Sleep(200);
+                }
+            }
+            startTime = time(NULL);
             Stock temp;
             if( cus[index].Administrator == 1 )
             {
@@ -575,10 +708,10 @@ start:
                 << "Stock Listed Price" << setw(30) << "Current Price" << setw(30) << "Status" <<endl;
                 for(int i=0; i < TOTALSTOCKS; i++)
                 {
-                    Display_Stock_Market_Information(share, i);//��ܥ����H��
+                    Display_Stock_Market_Information(share, i, floatRange);//��ܥ����H��
                 }
                 cin.get();
-                temp.Close_Selling_Stock(share);//�i��
+                temp.Close_Selling_Stock(share, cus, index);//�i��
                 break;
             }
             else
@@ -590,6 +723,34 @@ start:
         }
         case '5'://�ק�Ѳ�
         {
+            time_t endtime = time(NULL);
+            double floatRange[10] = {0};
+            if (endtime - startTime >= 1)
+            {
+                for (int i=0; i<TOTALSTOCKS; i++)
+                {
+                    srand(time(NULL));
+                    double x = rand() % 21 -10; //[-10, 10]
+                    double result = x * 0.01;
+                    floatRange[i] = result;
+
+                    double original = share[i].currentPrice;
+                    share[i].currentPrice = (1+result) * share[i].currentPrice;
+                    if (original < share[i].currentPrice)//increase
+                    {
+                        share[i].color = 1;
+                    }
+                    else if (original > share[i].currentPrice)
+                    {
+                        share[i].color = 2;
+                    }
+                    else {
+                        share[i].color = 3;
+                    }
+                    Sleep(200);
+                }
+            }
+            startTime = time(NULL);
             Stock temp;
             if( cus[index].Administrator == 1 )
             {
@@ -605,7 +766,7 @@ start:
                 << "Stock Listed Price" << setw(30) << "Current Price" << setw(30) << "Status" <<endl;
                 for(int i=0; i < TOTALSTOCKS; i++)
                 {
-                    Display_Stock_Market_Information(share, i);//��ܥ����H��
+                    Display_Stock_Market_Information(share, i, floatRange);//��ܥ����H��
                 }
                 cin.get();
                 temp.Modify_Stock(share);
@@ -619,6 +780,34 @@ start:
             }
         }
         case '6'://�d�ݫH��
+            time_t endtime = time(NULL);
+            double floatRange[10] = {0};
+            if (endtime - startTime >= 1)
+            {
+                for (int i=0; i<TOTALSTOCKS; i++)
+                {
+                    srand(time(NULL));
+                    double x = rand() % 21 -10; //[-10, 10]
+                    double result = x * 0.01;
+                    floatRange[i] = result;
+
+                    double original = share[i].currentPrice;
+                    share[i].currentPrice = (1+result) * share[i].currentPrice;
+                    if (original < share[i].currentPrice)//increase
+                    {
+                        share[i].color = 1;
+                    }
+                    else if (original > share[i].currentPrice)
+                    {
+                        share[i].color = 2;
+                    }
+                    else {
+                        share[i].color = 3;
+                    }
+                    Sleep(200);
+                }
+            }
+            startTime = time(NULL);
             system("cls");
             for(int i=0; i<100;i++) {
             cout<< " ";
@@ -631,7 +820,7 @@ start:
             << "Stock Listed Price" << setw(30) << "Current Price" << setw(30) << "Status" <<endl;
             for(int i=0; i < TOTALSTOCKS; i++)
             {
-                Display_Stock_Market_Information(share, i);//��ܥ����H��
+                Display_Stock_Market_Information(share, i, floatRange);//��ܥ����H��
             }
             for(int i=0; i<237;i++) {
             cout<< "~";
@@ -647,7 +836,7 @@ start:
 
             cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << endl;
             cout << "\t\t\t\tStock you own" << endl << endl;
-            cout << right << setw(20) << "Name" << setw(20) << "Code" << setw(20) << "Value" << endl;
+            cout << right << setw(20) << "Name" << setw(20) << "Code" << setw(20) << "Shares" << endl;
 
             for (int j=0; j<TOTALSTOCKS; j++)
             {
@@ -710,28 +899,33 @@ void Stock::Switch_choice(vector <Stock> share, char choice, vector <Customer> c
     case '1': //�i�J�Ѳ��������
     {
         time_t endtime = time(NULL);
-        if (endtime - startTime >= 1)
-        {
-            for (int i=0; i<TOTALSTOCKS; i++)
+            double floatRange[10] = {0};
+            if (endtime - startTime >= 1)
             {
-                srand(time(NULL));
-                double x = rand() % 21 -10; //[-10, 10]
-                double result = x * 0.01;
+                for (int i=0; i<TOTALSTOCKS; i++)
+                {
+                    srand(time(NULL));
+                    double x = rand() % 21 -10; //[-10, 10]
+                    double result = x * 0.01;
+                    floatRange[i] = result;
 
-                double original = share[i].currentPrice;
-                share[i].currentPrice = (1+result) * share[i].currentPrice;
-                if (original < share[i].currentPrice)//increase
-                {
-                    share[i].color = 1;
+                    double original = share[i].currentPrice;
+                    share[i].currentPrice = (1+result) * share[i].currentPrice;
+                    if (original < share[i].currentPrice)//increase
+                    {
+                        share[i].color = 1;
+                    }
+                    else if (original > share[i].currentPrice)
+                    {
+                        share[i].color = 2;
+                    }
+                    else {
+                        share[i].color = 3;
+                    }
+                    Sleep(200);
                 }
-                else if (original > share[i].currentPrice)
-                {
-                    share[i].color = 2;
-                }
-                Sleep(200);
             }
-        }
-        startTime = time(NULL);
+            startTime = time(NULL);
         system("cls");
         for(int i=0; i<100;i++) {
             cout<< " ";
@@ -744,7 +938,7 @@ void Stock::Switch_choice(vector <Stock> share, char choice, vector <Customer> c
         << "Stock Listed Price" << setw(30) << "Current Price" << setw(30) << "Status" <<endl;
         for(int i=0; i < TOTALSTOCKS; i++)
         {
-            Display_Stock_Market_Information(share, i);//��ܥ����T��
+            Display_Stock_Market_Information(share, i, floatRange);//��ܥ����T��
         }
         for(int i=0; i<237;i++) {
             cout<< "~";
@@ -805,7 +999,7 @@ void Stock::Switch_choice(vector <Stock> share, char choice, vector <Customer> c
     }
 }
 
-void Display_Stock_Market_Information(vector <Stock> share, int index)
+void Display_Stock_Market_Information(vector <Stock> share, int index, double floatRange[])
 {
     if (share[index].color == 1)
     {
@@ -815,7 +1009,7 @@ void Display_Stock_Market_Information(vector <Stock> share, int index)
         << setw(30) << share[index].Stock_Listed_Price
         << setw(30);
         SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_INTENSITY | FOREGROUND_RED);//red
-        cout << share[index].currentPrice
+        cout << share[index].currentPrice << "(+" << floatRange[index] * 100 << "%)" 
         << setw(40);
         SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);//white
         cout << (share[index].Close_Selling == 0?"Trading Not Stopped":"Trading Stopped") << endl;
@@ -828,7 +1022,7 @@ void Display_Stock_Market_Information(vector <Stock> share, int index)
         << setw(30) << share[index].Stock_Listed_Price
         << setw(30);
         SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_INTENSITY | FOREGROUND_GREEN);//green
-        cout << share[index].currentPrice
+        cout << share[index].currentPrice << '(' << floatRange[index] * 100 << "%)"
          << setw(40);
         SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);//white
         cout << (share[index].Close_Selling == 0?"Trading Not Stopped":"Trading Stopped") << endl;
@@ -837,7 +1031,7 @@ void Display_Stock_Market_Information(vector <Stock> share, int index)
         cout << right << setw(25)   <<  share[index].Stock_Name
         << setw(30) << share[index].Stock_Code
         << setw(30) << share[index].Free_Stocks_Float
-        << setw(30) << share[index].Stock_Listed_Price
+        << setw(30) << share[index].Stock_Listed_Price << '(' << floatRange[index] * 100 << ')' 
         << setw(30);
         SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);//white
         cout << share[index].currentPrice
@@ -845,17 +1039,27 @@ void Display_Stock_Market_Information(vector <Stock> share, int index)
     }
 }
 
-void Stock::Close_Selling_Stock(vector <Stock> &share)//�Ȱ��Ѳ����
+void Stock::Close_Selling_Stock(vector <Stock> &share, vector <Customer> cus, int index)//�Ȱ��Ѳ����
 {
     char input;
     string share_code = "";
-    cout<<"Enter to stock code you want to stop trading: ";
+    Customer cust;
+    cout<<"Enter to stock code you want to stop trading: (Enter 0 to return)";
     cin >> share_code;
+    if (share_code == "0")
+    {
+        cust.Stock_Portfolio(share, cus, index);
+    }
+
     while (share_code.size() > 5 || share_code.size() <= 0)
     {
         cout << "Stock code has to be less than 5 characters or 1 above" << endl;
-        cout << "Enter the stock code you want to buy:";
+        cout << "Enter the stock code you want to buy: (Enter 0 to return)";
         cin >> share_code;
+        if (share_code == "0")
+        {
+            cust.Stock_Portfolio(share, cus, index);
+        }
     }
     int i=0;
     flag = 0;
@@ -896,17 +1100,26 @@ void Stock::Close_Selling_Stock(vector <Stock> &share)//�Ȱ��Ѳ����
     getch();
 }
 
-void Stock::Start_Selling_Stock(vector <Stock> &share)//��_�Ѳ����
+void Stock::Start_Selling_Stock(vector <Stock> &share,vector <Customer> cus , int index)//��_�Ѳ����
 {
     char input;
+    Customer cust;
     string share_code = "";
-    cout << "Enter the stock code you want to resume trading:";
+    cout << "Enter the stock code you want to resume trading: (Enter 0 to return)";
     cin >> share_code;
+    if (share_code == "0")
+    {
+        cust.Stock_Portfolio(share, cus, index);
+    }
     while (share_code.size() > 5 || share_code.size() <= 0)
     {
         cout << "Stock code has to be less than 5 characters or 1 above" << endl;
-        cout << "Enter the stock code you want to buy:";
+        cout << "Enter the stock code you want to buy: (Enter 0 to return)";
         cin >> share_code;
+        if (share_code == "0")
+        {
+            cust.Stock_Portfolio(share, cus, index);
+        }
     }
     int i= 0;
     flag = 0;
