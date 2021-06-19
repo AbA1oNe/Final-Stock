@@ -90,6 +90,7 @@ public:
         Total_Assets = TA;
         Administrator = Admin;
     }
+    void Count_Total_Assets(vector <Stock>, vector <Customer>, int );
     void Log_In(string, vector <Stock>, time_t) const;//�n��
     void Register(vector <Customer>);//���U
     friend void Display_Stock_Market_Information(vector <Stock>, int);
@@ -98,6 +99,15 @@ public:
     //friend void Switch_choice(vector <Stock>, char, time_t);
 };
 
+void Customer::Count_Total_Assets(vector <Stock> share, vector <Customer> cus, int index)//計算總資產
+{
+    cus[index].Total_Assets=0;
+    for(int i=0; i<10; i++)
+    {
+        Total_Assets += share[i].currentPrice*cus[index].share_holding_value[i];
+    }
+    cus[index].Total_Assets += cus[index].Balance;
+}
 /*void Customer::Log_In(string pass_word, vector <Stock> share, time_t startTime) const//�n��
 {
     if( pass_word == Customer_Password )//�ֹ�K�X
@@ -312,9 +322,10 @@ start:
             cout<< "~";
             }
             cout << right << setw(20) << "Market Value of Holding Stock" << setw(10) << "Money" << setw(20) << "Total Assets"<< endl;
+            cus[index].Count_Total_Assets(share, cus, index);
             cout << right << setw(15) << cus[index].Holding_Market_Value << setw(22) << cus[index].Balance
                  << setw(17) << cus[index].Total_Assets << endl;
-            
+
             cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << endl;
             cout << "\t\t\t\tStock you own" << endl << endl;
             cout << right << setw(20) << "Name" << setw(20) << "Code" << setw(20) << "Shares" << endl;
@@ -398,6 +409,7 @@ start:
                                 cout << "Done" << endl;
                                 cout << endl;
                                 cout << "Market Valuse of Holding Stock\tMoney\tTotal Assets"  << endl;
+                                cus[index].Count_Total_Assets(share, cus, index);
                                 cout << cus[index].Holding_Market_Value
                                      << "\t\t" << cus[index].Balance
                                      << "\t\t" << cus[index].Total_Assets << endl;
@@ -499,9 +511,10 @@ start:
             cout<< "~";
             }
             cout << right << setw(20) << "Market Value of Holding Stock" << setw(10) << "Money" << setw(20) << "Total Assets"<< endl;
+            cus[index].Count_Total_Assets(share, cus, index);
             cout << right << setw(15) << cus[index].Holding_Market_Value << setw(22) << cus[index].Balance
                  << setw(17) << cus[index].Total_Assets << endl;
-            
+
 
             cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << endl;
             cout << "\t\t\t\tStock you own" << endl << endl;
@@ -826,6 +839,7 @@ start:
             cout<< "~";
             }
             cout << right << setw(20) << "Market Value of Holding Stock" << setw(10) << "Money" << setw(20) << "Total Assets"<< endl;
+            cus[index].Count_Total_Assets(share, cus, index);
             cout << right << setw(15) << cus[index].Holding_Market_Value << setw(22) << cus[index].Balance
                  << setw(17) << cus[index].Total_Assets << endl;
             /*cout << "\t\t\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << endl;
@@ -1009,7 +1023,7 @@ void Display_Stock_Market_Information(vector <Stock> share, int index, double fl
         << setw(30) << share[index].Stock_Listed_Price
         << setw(30);
         SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_INTENSITY | FOREGROUND_RED);//red
-        cout << share[index].currentPrice << "(+" << floatRange[index] * 100 << "%)" 
+        cout << share[index].currentPrice << "(+" << floatRange[index] * 100 << "%)"
         << setw(40);
         SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);//white
         cout << (share[index].Close_Selling == 0?"Trading Not Stopped":"Trading Stopped") << endl;
@@ -1031,7 +1045,7 @@ void Display_Stock_Market_Information(vector <Stock> share, int index, double fl
         cout << right << setw(25)   <<  share[index].Stock_Name
         << setw(30) << share[index].Stock_Code
         << setw(30) << share[index].Free_Stocks_Float
-        << setw(30) << share[index].Stock_Listed_Price << '(' << floatRange[index] * 100 << ')' 
+        << setw(30) << share[index].Stock_Listed_Price << '(' << floatRange[index] * 100 << ')'
         << setw(30);
         SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);//white
         cout << share[index].currentPrice
