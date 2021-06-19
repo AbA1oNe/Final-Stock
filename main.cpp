@@ -129,13 +129,28 @@ void Customer::Register(vector <Customer> cus)//註冊
     double TotalAssets, Balbace;
     char input;
     bool Admin;
+    bool flag;
     ofstream WriteFile("Customer.txt",ios::app);
     if(!WriteFile) {
         cout<< "can't open the file" <<endl;
     }
     else {
         cout << "Please enter your username: ";
-        cin >>Name;
+        while(cin>>Name) {
+            flag = 0;
+            for(int i=0;i<cus.size();i++) {
+                if(Name == cus[i].Customer_Name) {
+                    flag = 1;
+                    break;
+                }
+            }
+            if(!flag) {
+                break;
+            }
+            system("cls");
+            cout<<"The username has been used" <<endl;
+            cout<< "Please enter your username: ";
+        }
         cout << endl << "Please enter your password:";
         cin >> Password;
         cout << endl << "Please enter your starting money: ";
@@ -154,8 +169,23 @@ void Customer::Register(vector <Customer> cus)//註冊
         else {
             cout << "Default as not a admin"<<endl;
         }
-        WriteFile << endl << Name << ' ' << Password << ' ' << "|" << ' ' << "|" <<' ' << "|" << ' ' << Balbace << ' ' << 0 << ' '
-                    << TotalAssets << ' ' << Admin;
+       WriteFile << endl << Name << ' ' << Password << ' ' ;
+        for(int j=0; j<2; j++) {
+            for(int i=0; i<10; i++) {
+                if(i == 9) {
+                    WriteFile << "$" << ' ' << "|" <<' ';
+                }
+                else {
+                    WriteFile << "$" <<' ';
+                }
+            }
+        }
+        for(int i=0; i<10 ;i++) {
+            WriteFile << "0" <<' ';
+        }
+        WriteFile << "|" <<' '<< Balbace << ' ' << 0 << ' ' << TotalAssets << ' ' << Admin;
+        /*WriteFile << endl << Name << ' ' << Password << ' ' << "|" << ' ' << "|" <<' ' << "|" << ' ' << Balbace << ' ' << 0 << ' '
+                    << TotalAssets << ' ' << Admin;*/
         WriteFile.close();
         vector <string> nothing;
         vector <double> nothing1;
@@ -183,7 +213,6 @@ void Customer::Register(vector <Customer> cus)//註冊
         cout << "Please enter your password:" << endl;
         cin >> Customer_Password;
     }
-
     cout << endl;
     cout << "Please enter your starting money";
     cin >> Total_Assets;
@@ -778,7 +807,7 @@ void Display_Stock_Market_Information(vector <Stock> share, int index)
     {
         cout << " "   <<  share[index].Stock_Name
         << "\t\t" << share[index].Stock_Code
-        << "\t\t" << share[index].Stock_Volume
+        << "\t\t" << share[index].Free_Stocks_Float
         << "\t\t" << cust.share_holding_value
         << "\t\t" << share[index].Stock_Issue_Price
         << "\t\t";
@@ -792,7 +821,7 @@ void Display_Stock_Market_Information(vector <Stock> share, int index)
     {
         cout << " "   <<  share[index].Stock_Name
         << "\t\t" << share[index].Stock_Code
-        << "\t\t" << share[index].Stock_Volume
+        << "\t\t" << share[index].Free_Stocks_Float
         << "\t\t" << cust.share_holding_value
         << "\t\t" << share[index].Stock_Issue_Price
         << "\t\t";
@@ -805,7 +834,7 @@ void Display_Stock_Market_Information(vector <Stock> share, int index)
     else {
         cout << " "   <<  share[index].Stock_Name
         << "\t\t" << share[index].Stock_Code
-        << "\t\t" << share[index].Stock_Volume
+        << "\t\t" << share[index].Free_Stocks_Float
         << "\t\t" << cust.share_holding_value
         << "\t\t" << share[index].Stock_Issue_Price
         << "\t\t";
