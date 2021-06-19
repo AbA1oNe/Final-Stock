@@ -103,6 +103,7 @@ public:
     void Register(vector <Customer>);//���U
     friend void Display_Stock_Market_Information(vector <Stock>, int);
     void Stock_Portfolio(vector <Stock>, vector <Customer>, int ) const; // �����Ҩ�
+    friend void CustomerWrite(vector <Customer>);
     //friend void Switch_choice(vector <Stock>, char, time_t);
 };
 Stock temp;//�����ܶq�A�n���Ѳ���H
@@ -242,6 +243,8 @@ start:
         {
         case '0'://��^�D����
         {
+            CustomerWrite(cus);
+            StockWrite(share);
             main();
         }
         case '1': //�R�J
@@ -631,6 +634,7 @@ void Stock::Switch_choice(vector <Stock> share, char choice, vector <Customer> c
         system("cls");
         cout << "Good Bye" << endl;
         StockWrite(share);
+        CustomerWrite(cus);
         exit(0);
     }
     case '1': //�i�J�Ѳ��������
@@ -999,6 +1003,33 @@ void StockWrite(vector <Stock> share)
     }
 }
 
+void CustomerWrite(vector <Customer> cus)
+{
+    ofstream file("Customer.txt");
+    if(!file) {
+        cout<< "Can not open Customer_file.txt" << endl;
+    }
+    else {
+        for(int i=0; i<cus.size(); i++) {
+            file << cus[i].Customer_Name << ' ' << cus[i].Customer_Password << ' ';
+            for(int j=0; j<10; j++) {
+                file << cus[i].share_holding_name[j] << ' ';
+            }
+            file << "|" << ' ';
+            for(int j=0; j<10; j++) {
+                file << cus[i].share_holding_code[j] << ' ';
+            }
+            file << "|" << ' ';
+            for(int j=0; j<10; j++) {
+                file << cus[i].share_holding_value[j] << ' ';
+            }
+            file << "|" << ' ';
+            file << cus[i].Balance << ' ' << cus[i].Holding_Market_Value << ' ' << cus[i].Total_Assets << ' ' << cus[i].Administrator <<endl;
+        }
+    }
+    file.close();
+}
+
 int main()
 {
     ifstream dataFile("Stock_File.txt");
@@ -1043,7 +1074,7 @@ int main()
             while(file >> share_holding_code && share_holding_code !="|") {
                 ShareHoldingCode.push_back(share_holding_code);
             }
-
+            
             while(file >> share_holding_value && share_holding_value != "|") {
                 double SHV = stod(share_holding_value);
                 ShareHoldingValue.push_back(SHV);
