@@ -1,4 +1,3 @@
-
 #include <iostream>
 #include <cstring>
 #include <conio.h>//getch()
@@ -45,9 +44,9 @@ public:
         Close_Selling = close;
         color = 3;
     }
-    void Close_Selling_Stock(vector <Stock>); //�Ȱ��Ѳ����
-    void Start_Selling_Stock(vector <Stock>); //��_�Ѳ����
-    void Modify_Stock(vector <Stock>);//�ק�Ѳ����(�޲z��)
+    void Close_Selling_Stock(vector <Stock>&); //�Ȱ��Ѳ����
+    void Start_Selling_Stock(vector <Stock>&); //��_�Ѳ����
+    void Modify_Stock(vector <Stock>&);//�ק�Ѳ����(�޲z��)
 
     friend void Display_Stock_Market_Information(vector <Stock>, int);//��ܫH��
     void Switch_choice(vector <Stock>, char ,vector <Customer>);//�\����
@@ -846,11 +845,11 @@ void Display_Stock_Market_Information(vector <Stock> share, int index)
     }
 }
 
-void Stock::Close_Selling_Stock(vector <Stock> share)//�Ȱ��Ѳ����
+void Stock::Close_Selling_Stock(vector <Stock> &share)//�Ȱ��Ѳ����
 {
     char input;
     string share_code = "";
-    cout<<"Enter to stock code you want to stop trading";
+    cout<<"Enter to stock code you want to stop trading: ";
     cin >> share_code;
     while (share_code.size() > 5 || share_code.size() <= 0)
     {
@@ -897,7 +896,7 @@ void Stock::Close_Selling_Stock(vector <Stock> share)//�Ȱ��Ѳ����
     getch();
 }
 
-void Stock::Start_Selling_Stock(vector <Stock> share)//��_�Ѳ����
+void Stock::Start_Selling_Stock(vector <Stock> &share)//��_�Ѳ����
 {
     char input;
     string share_code = "";
@@ -945,7 +944,7 @@ void Stock::Start_Selling_Stock(vector <Stock> share)//��_�Ѳ����
     getch();
 }
 
-void Stock::Modify_Stock(vector <Stock> t)//�վ��T
+void Stock::Modify_Stock(vector <Stock> &t)//�վ��T
 {
     flag = 0;
     int i=0;
