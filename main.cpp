@@ -1458,7 +1458,7 @@ void CustomerWrite(vector <Customer> cus)
                 file << cus[i].share_holding_value[j] << ' ';
             }
             file << "|" << ' ';
-            file << cus[i].Balance << ' ' << cus[i].Holding_Market_Value << ' ' << cus[i].Total_Assets << ' ' << cus[i].Administrator <<endl;
+            file <<fixed << setprecision(2) << cus[i].Balance << ' ' << cus[i].Holding_Market_Value << ' ' << cus[i].Total_Assets << ' ' << cus[i].Administrator <<endl;
         }
     }
     file.close();
