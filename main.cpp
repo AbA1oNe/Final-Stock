@@ -11,7 +11,6 @@ using namespace std;
 const int TOTALSTOCKS = 10;//Total stocks number
 time_t startTime;
 double Random();// function that controls the float
-void Interface(vector <Stock>, vector <Customer>);
 int main();
 
 class Customer;
@@ -42,12 +41,14 @@ public:
     }
     void Close_Selling_Stock(vector <Stock>&, vector <Customer>, int); //Stop trading
     void Start_Selling_Stock(vector <Stock>&, vector <Customer>, int); //Resume trading
-    void Modify_Stock(vector <Stock>&);//�ק�Ѳ����(�޲z��)
+    void Modify_Stock(vector <Stock>&);
 
     friend void Display_Stock_Market_Information(vector <Stock>, int, double[]);
     void Switch_choice(vector <Stock>, char ,vector <Customer>);//Menu
     friend void StockWrite(vector <Stock>);
 };
+
+void Interface(vector <Stock>, vector <Customer>);
 
 class Customer
 {
@@ -86,7 +87,7 @@ public:
     }
     void Count_Total_Assets(vector <Stock>, vector <Customer>, int );
     void Log_In(string, vector <Stock>, time_t) const;
-    void Register(vector <Customer>);//���U
+    void Register(vector <Customer>);
     friend void Display_Stock_Market_Information(vector <Stock>, int);
     void Stock_Portfolio(vector <Stock>, vector <Customer>, int ) const;// Stock market menu
     friend void CustomerWrite(vector <Customer>);
@@ -661,10 +662,10 @@ start:
                 << "Stock Listed Price" << setw(30) << "Current Price" << setw(30) << "Status" <<endl;
                 for(int i=0; i < TOTALSTOCKS; i++)
                 {
-                    Display_Stock_Market_Information(share, i, floatRange);//��ܥ����H��
+                    Display_Stock_Market_Information(share, i, floatRange);
                 }
                 cin.get();
-                temp.Close_Selling_Stock(share, cus, index);//�i��
+                temp.Close_Selling_Stock(share, cus, index);
                 break;
             }
             else
