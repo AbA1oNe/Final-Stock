@@ -260,7 +260,7 @@ start:
                     {
                         share[i].color = 3;
                     }
-                    Sleep(200);
+                    Sleep(400);
                 }
             }
             startTime = time(NULL);
@@ -454,7 +454,7 @@ start:
                     {
                         share[i].color = 3;
                     }
-                    Sleep(200);
+                    Sleep(400);
                 }
             }
             startTime = time(NULL);
@@ -615,7 +615,7 @@ start:
                     {
                         share[i].color = 3;
                     }
-                    Sleep(200);
+                    Sleep(400);
                 }
             }
             startTime = time(NULL);
@@ -676,7 +676,7 @@ start:
                     {
                         share[i].color = 3;
                     }
-                    Sleep(200);
+                    Sleep(400);
                 }
             }
             startTime = time(NULL);
@@ -736,7 +736,7 @@ start:
                     {
                         share[i].color = 3;
                     }
-                    Sleep(200);
+                    Sleep(400);
                 }
             }
             startTime = time(NULL);
@@ -796,7 +796,7 @@ start:
                     {
                         share[i].color = 3;
                     }
-                    Sleep(200);
+                    Sleep(400);
                 }
             }
             startTime = time(NULL);
@@ -907,7 +907,7 @@ void Stock::Switch_choice(vector <Stock> share, char choice, vector <Customer> c
                 {
                     share[i].color = 3;
                 }
-                Sleep(200);
+                Sleep(400);
             }
         }
         startTime = time(NULL);
@@ -1017,6 +1017,11 @@ void Stock::Switch_choice(vector <Stock> share, char choice, vector <Customer> c
 
 void Display_Stock_Market_Information(vector <Stock> share, int index, double floatRange[])
 {
+    string price;
+    stringstream ss;
+    ss.clear();
+    ss.str("");
+
     cout << right << setw(20) << " "
          << left  << setw(30) << share[index].Stock_Name
          << left  << setw(30) << share[index].Stock_Code
@@ -1025,13 +1030,21 @@ void Display_Stock_Market_Information(vector <Stock> share, int index, double fl
 
     if(share[index].color == 1)//red
     {
+        ss << share[index].currentPrice << "(+" << floatRange[index] * 100 << "%)";
+        ss >> price;
+        ss.clear();
+        ss.str("");
         SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_INTENSITY | FOREGROUND_RED);//change red color
-        cout << left << setw(30) << share[index].currentPrice << "(+" << floatRange[index] * 100 << "%)";
+        cout << left << setw(30) << price;
     }
     else if(share[index].color == 2)//green
     {
+        ss << share[index].currentPrice << '(' << floatRange[index] * 100 << "%)";
+        ss >> price;
+        ss.clear();
+        ss.str("");
         SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_INTENSITY | FOREGROUND_GREEN);//change green color
-        cout << left << setw(30) << share[index].currentPrice << '(' << floatRange[index] * 100 << "%)";
+        cout << left << setw(30) << price;
     }
     else//No change
     {
