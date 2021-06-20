@@ -5,6 +5,7 @@
 #include <vector>
 #include <time.h>
 #include <string>
+#include <sstream>
 #include <windows.h>
 using namespace std;
 
@@ -1015,6 +1016,13 @@ void Display_Stock_Market_Information(vector <Stock> share, int index, double fl
 {
     if (share[index].color == 1)//red
     {
+        string pricePostive;
+        stringstream ss;
+        ss.clear();
+
+        ss << share[index].currentPrice << "(+" << floatRange[index]*100 << "%)";
+        ss >> pricePostive;
+
         cout << right << setw(20) << " "
              << left  << setw(30) << share[index].Stock_Name
              << left  << setw(30) << share[index].Stock_Code
@@ -1022,7 +1030,7 @@ void Display_Stock_Market_Information(vector <Stock> share, int index, double fl
              << left  << setw(30) << share[index].Stock_Listed_Price;
 
         SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_INTENSITY | FOREGROUND_RED);
-        cout << left << setw(30) << share[index].currentPrice << "(+" << floatRange[index] * 100 << "%)";
+        cout << left << setw(30) << pricePostive;
 
         SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);//white
         cout << left << setw(30) << (share[index].Close_Selling == 0?"Trading Not Stopped":"Trading Stopped") << endl;
@@ -1034,7 +1042,7 @@ void Display_Stock_Market_Information(vector <Stock> share, int index, double fl
              << setw(30) << share[index].Free_Stocks_Float
              << setw(30) << share[index].Stock_Listed_Price
              << setw(30);
-        SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_INTENSITY | FOREGROUND_GREEN);
+        SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_INTENSITY | FOREGROUND_GREEN);//green
         cout << share[index].currentPrice << '(' << floatRange[index] * 100 << "%)"
              << setw(30);
         SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);//white
@@ -1069,7 +1077,7 @@ void Stock::Close_Selling_Stock(vector <Stock> &share, vector <Customer> cus, in
     while (share_code.size() > 5 || share_code.size() <= 0)
     {
         cout << "Stock code has to be less than 5 characters or 1 above" << endl;
-        cout << "Enter the stock code you want to buy: (Enter 0 to return)";
+        cout << "Enter the stock code you want to stop trading: (Enter 0 to return)";
         cin >> share_code;
         if (share_code == "0")
         {
@@ -1130,7 +1138,7 @@ void Stock::Start_Selling_Stock(vector <Stock> &share,vector <Customer> cus , in
     while (share_code.size() > 5 || share_code.size() <= 0)
     {
         cout << "Stock code has to be less than 5 characters or 1 above" << endl;
-        cout << "Enter the stock code you want to buy: (Enter 0 to return)";
+        cout << "Enter the stock code you want to resume trading: (Enter 0 to return)";
         cin >> share_code;
         if (share_code == "0")
         {
@@ -1185,7 +1193,7 @@ void Stock::Modify_Stock(vector <Stock> &t)
     while (share_code.size() > 5 || share_code.size() <= 0)
     {
         cout << "Stock code has to be less than 5 characters or 1 above" << endl;
-        cout << "Enter the stock code you want to buy:";
+        cout << "Enter the original code:";
         cin >> share_code;
     }
     if( share_code != "" )
@@ -1219,7 +1227,7 @@ void Stock::Modify_Stock(vector <Stock> &t)
                     while (share_code.size() > 5 || share_code.size() <= 0)
                     {
                         cout << "Stock code has to be less than 5 characters or 1 above" << endl;
-                        cout << "Enter the stock code you want to buy:";
+                        cout << "Enter the new code:";
                         cin >> share_code;
                     }
                     t[i].Stock_Code = share_code;
