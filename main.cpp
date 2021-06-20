@@ -297,7 +297,7 @@ start:
                  << left  << setw(30) << "Market Value of owned Stock"
                  << left  << setw(30) << "Money"
                  << left  << setw(30) << "Total Assets" << endl << endl;
-            cus[index].Count_Total_Assets(share, cus, index);
+            cus[index].Count_Total_Assets(share);
             cout << right << setw(20) << " "
                  << left  << setw(30) << fixed << setprecision(2) << cus[index].Holding_Market_Value
                  << left  << setw(30) << fixed << setprecision(2) << cus[index].Balance
@@ -412,7 +412,7 @@ start:
                                 cout << right << setw(20) << " " << "Done" << endl;
                                 cout << right << setw(20) << " " << endl;
                                 cout << right << setw(20) << " " << "Market Valuse of Holding Stock\tMoney\tTotal Assets"  << endl;
-                                cus[index].Count_Total_Assets(share, cus, index);
+                                cus[index].Count_Total_Assets(share);
                                 cout << right << setw(20) << " " << cus[index].Holding_Market_Value
                                      << "\t\t" << cus[index].Balance
                                      << "\t\t" << cus[index].Total_Assets << endl;
