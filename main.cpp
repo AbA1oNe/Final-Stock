@@ -423,7 +423,7 @@ start:
                             }
                             else if(share[i].Free_Stocks_Float <= volume)
                             {
-                                cout << right << setw(20) << " " << share[i].Stock_Name << "has less stocks than you want to buy";
+                                cout << right << setw(20) << " " << share[i].Stock_Name << " has less stocks than you want to buy";
                                 cout << right << setw(20) << " " << endl;
                                 cout << right << setw(20) << " " << "Hit any key to return" << endl;
                                 cout << right << setw(20) << " " << endl;
