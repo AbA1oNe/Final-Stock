@@ -89,7 +89,7 @@ public:
         Total_Assets = TA;
         Administrator = Admin;
     }
-    void Count_Total_Assets(vector <Stock>, vector <Customer>, int );
+    void Count_Total_Assets(vector <Stock>&, vector <Customer>&, int );
     void Log_In(string, vector <Stock>, time_t) const;
     void Register(vector <Customer>);
     friend void Display_Stock_Market_Information(vector <Stock>, int);
@@ -97,7 +97,7 @@ public:
     friend void CustomerWrite(vector <Customer>);
 };
 
-void Customer::Count_Total_Assets(vector <Stock> share, vector <Customer> cus, int index)
+void Customer::Count_Total_Assets(vector <Stock> &share, vector <Customer> &cus, int index)
 {
     cus[index].Total_Assets=0;
     for(int i=0; i<10; i++)
@@ -109,8 +109,8 @@ void Customer::Count_Total_Assets(vector <Stock> share, vector <Customer> cus, i
 
 void Customer::Register(vector <Customer> cus)//Register
 {
-    string Name,Password;
-    double TotalAssets, Balbace;
+    string Name, Password;
+    double Balance, TotalAssets;
     char input;
     bool Admin;
     bool flag;
@@ -122,7 +122,7 @@ void Customer::Register(vector <Customer> cus)//Register
     else
     {
         cout << "Please enter your username: ";
-        while(cin>>Name)
+        while(cin >> Name)
         {
             flag = 0;
             for(int i=0; i<cus.size(); i++)
@@ -138,16 +138,18 @@ void Customer::Register(vector <Customer> cus)//Register
                 break;
             }
             system("cls");
-            cout<<"The username has been used" <<endl;
-            cout<< "Please enter your username: ";
+            cout << "The username has been used" <<endl;
+            cout << "Please enter your username: ";
         }
         cout << endl << "Please enter your password:";
-        cin >> Password;
-        cout << endl << "Please enter your starting money: ";
-        cin>> TotalAssets;
-        Balbace = TotalAssets;
+        cin  >> Password;
+
+        cout << endl << "Your starting money would be 10 million" << endl;
+        Balance     = 10000000;
+        TotalAssets = 10000000;
+
         cout << endl << "Administrator or not?(y/n)" << endl;
-        cin>> input;
+        cin >> input;
         if( (input == 'y') || (input == 'Y'))
         {
             Admin = 1;
@@ -181,12 +183,12 @@ void Customer::Register(vector <Customer> cus)//Register
         {
             WriteFile << "0" <<' ';
         }
-        WriteFile << "|" <<' '<< Balbace << ' ' << 0 << ' ' << TotalAssets << ' ' << Admin;
+        WriteFile << "|" <<' '<< Balance << ' ' << 0 << ' ' << TotalAssets << ' ' << Admin;
 
         WriteFile.close();
         vector <string> nothing;
         vector <double> nothing1;
-        Customer t(Name, Password, nothing, nothing, nothing1, Balbace, 0, TotalAssets, Admin);
+        Customer t(Name, Password, nothing, nothing, nothing1, Balance, 0, TotalAssets, Admin);
         cus.push_back(t);
         getch();
         system("cls");
@@ -206,20 +208,20 @@ void Customer::Stock_Portfolio(vector <Stock> share, vector <Customer> cus, int 
     long int volume;
 start:
     system("cls");
-    cout << endl << endl;
-    cout << "\t\tWelcome to---------------The Stock System---------------" << endl;
-    cout << "\t\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << endl;
-    cout << "\t\t User: " << cus[index].Customer_Name << endl << endl;
-    cout << "\t\t Buy..........................[1]" << endl;
-    cout << "\t\t Sell..........................[2]" << endl;
-    cout << "\t\t Resume a stock's trading..................[3]" << endl;
-    cout << "\t\t Pause a stock's trading..................[4]" << endl;
-    cout << "\t\t Modify a stock's name or code............[5]" << endl;
-    cout << "\t\t Check the stock market..................[6]" << endl;
-    cout << "\t\t Exit......................[0]" << endl;
-    cout << endl << "\t\t Enter an option: ";
+    cout << "***************Welcome To The Stock System***************" << endl;
+    cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << endl;
+    cout << "User: " << cus[index].Customer_Name << endl << endl;
+    cout << "Buy...................................................[1]" << endl;
+    cout << "Sell..................................................[2]" << endl;
+    cout << "Resume a stock's trading..............................[3]" << endl;
+    cout << "Pause a stock's trading...............................[4]" << endl;
+    cout << "Modify a stock's name or code.........................[5]" << endl;
+    cout << "Check the stock market................................[6]" << endl;
+    cout << "Exit..................................................[0]" << endl;
+    cout << endl << "Enter an option: ";
 
     cin >> input;
+    cout << "Please wait a second";
 
     if( (input>'6') || (input<'0') )
         goto start;
@@ -274,8 +276,13 @@ start:
             {
                 cout<< "~";
             }
-            cout << endl << right << setw(30) << "Company Name" << setw(30) << "Company Code" << setw(30) << "Floating Stocks" << setw(30)
-                 << "Stock Listed Price" << setw(30) << "Current Price" << setw(30) << "Status" <<endl;
+            cout << right << setw(20) << " "
+                 << left  << setw(30) << "Company Name"
+                 << left  << setw(30) << "Company Code"
+                 << left  << setw(30) << "Floating Stocks"
+                 << left  << setw(30) << "Stock Listed Price"
+                 << left  << setw(30) << "Current Price"
+                 << left  << setw(30) << "Status" <<endl;
             for(int i=0; i < TOTALSTOCKS; i++)
             {
                 Display_Stock_Market_Information(share, i, floatRange);
@@ -284,29 +291,48 @@ start:
             {
                 cout<< "~";
             }
-            cout << right << setw(20) << "Market Value of Holding Stock" << setw(10) << "Money" << setw(20) << "Total Assets"<< endl;
+            cout << right << setw(20) << " "
+                 << left  << setw(30) << "Market Value of owned Stock"
+                 << left  << setw(30) << "Money"
+                 << left  << setw(30) << "Total Assets" << endl << endl;
             cus[index].Count_Total_Assets(share, cus, index);
-            cout << right << setw(15) << cus[index].Holding_Market_Value << setw(22) << cus[index].Balance
-                 << setw(17) << cus[index].Total_Assets << endl;
+            cout << right << setw(20) << " "
+                 << left  << setw(30) << fixed << setprecision(2) << cus[index].Holding_Market_Value
+                 << left  << setw(30) << fixed << setprecision(2) << cus[index].Balance
+                 << left  << setw(30) << fixed << setprecision(2) << cus[index].Total_Assets << endl;
 
-            cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << endl;
-            cout << "\t\t\t\tStock you own" << endl << endl;
-            cout << right << setw(20) << "Name" << setw(20) << "Code" << setw(20) << "Shares" << endl;
+            for(int i=0; i<237; i++)
+            {
+                cout<< "~";
+            }
+            cout << right << setw(20) << " "
+                 << left  << setw(30) << "Stock you own" << endl << endl
+                 << right << setw(20) << " "
+                 << left  << setw(30) << "Name"
+                 << left  << setw(30) << "Code"
+                 << left  << setw(30) << "Shares" << endl;
 
             for (int j=0; j<TOTALSTOCKS; j++)
             {
-                if (cus[index].share_holding_name[j] == "$")//this means no name in the array
+                if (cus[index].share_holding_name[j] == "$" || cus[index].share_holding_value[j] == 0)//this means no name in the array
                 {
                     continue;
                 }
                 else
                 {
-                    cout << right << setw(20) << cus[index].share_holding_name[j] << setw(20)
-                         << cus[index].share_holding_code[j] << setw(20) << cus[index].share_holding_value[j] << endl;
+                    cout << right << setw(20) << " "
+                         << left  << setw(30) << cus[index].share_holding_name[j]
+                         << left  << setw(30) << cus[index].share_holding_code[j]
+                         << left  << setw(30) << cus[index].share_holding_value[j] << endl;
                 }
             }
             cin.get();
-            cout << endl << "Enter the stock code you want to buy: (Enter 0 to return)";
+            for(int i=0; i<237; i++)
+            {
+                cout<< "~";
+            }
+            cout << right << setw(20) << " "
+                 << "Enter the stock code you want to buy(Enter 0 to return) :";
             cin >> code;
             if (code == "0")
             {
@@ -315,8 +341,17 @@ start:
 
             while (code.size() > 5 || code.size() <= 0)
             {
-                cout << "Stock code has to be less than 5 characters or 1 above" << endl;
-                cout << "Enter the stock code you want to buy: (Enter 0 to return)";
+                for(int i=0; i<237; i++)
+                {
+                    cout<< "~";
+                }
+                cout << right << setw(20) << " "
+                     << "Stock code has to be less than 5 characters or 1 above" << endl;
+                cout << right << setw(20) << " "
+                     << "Enter the stock code you want to buy: (Enter 0 to return)" << endl;
+
+                cout << right << setw(20) << " ";
+
                 cin >> code;
                 if (code == "0")
                 {
@@ -334,29 +369,31 @@ start:
                     {
                         if( share[i].Close_Selling == 1 )
                         {
-                            cout << "The stock has paused the trade" << endl;
+                            cout << right << setw(20) << " "
+                                 << "The stock has paused the trade" << endl;
                             break;
                         }
                         else
                         {
                             int Max_Buy_Stock_Volume;//To calculate how many shares at most the user can but with its balance
                             Max_Buy_Stock_Volume = int(cus[index].Balance/share[i].currentPrice);
-                            cout << "At most you can buy:" << Max_Buy_Stock_Volume << endl;
+                            cout << right << setw(20) << " "
+                                 << "At most you can buy:" << Max_Buy_Stock_Volume << endl;
                             if (Max_Buy_Stock_Volume == 0)
                             {
-                                cout << "Not enough money" << endl;
-                                cout << "Hit any key to return" << endl;
+                                cout << right << setw(20) << " " << "Not enough money" << endl;
+                                cout << right << setw(20) << " " << "Hit any key to return" << endl;
                                 cout << endl;
                                 getch();
                                 system("cls");
                                 goto start;
                             }
                             flag = 1;
-                            cout << "Enter how much you want to buy: ";
+                            cout << right << setw(20) << " " << "Enter how much you want to buy: ";
                             cin >> volume;
                             while(volume != (int)volume)//To check if volume is an integer
                             {
-                                cout<<"Please enter an integer"<<endl;
+                                cout << right << setw(20) << " " << "Please enter an integer" << endl;
                                 cin >> volume;
                             }
                             if( (share[i].Free_Stocks_Float >= volume) && (cus[index].Balance >= volume*share[i].currentPrice) )
@@ -370,11 +407,11 @@ start:
                                 cus[index].Balance -= share[i].currentPrice*volume;
                                 cus[index].Holding_Market_Value += share[i].currentPrice*volume;
                                 system("cls");
-                                cout << "Done" << endl;
-                                cout << endl;
-                                cout << "Market Valuse of Holding Stock\tMoney\tTotal Assets"  << endl;
+                                cout << right << setw(20) << " " << "Done" << endl;
+                                cout << right << setw(20) << " " << endl;
+                                cout << right << setw(20) << " " << "Market Valuse of Holding Stock\tMoney\tTotal Assets"  << endl;
                                 cus[index].Count_Total_Assets(share, cus, index);
-                                cout << cus[index].Holding_Market_Value
+                                cout << right << setw(20) << " " << cus[index].Holding_Market_Value
                                      << "\t\t" << cus[index].Balance
                                      << "\t\t" << cus[index].Total_Assets << endl;
                                 cin.get();
@@ -384,19 +421,19 @@ start:
                             }
                             else if(share[i].Free_Stocks_Float <= volume)
                             {
-                                cout << share[i].Stock_Name << "has less stocks than you want to buy";
-                                cout << endl;
-                                cout << "Hit any key to return" << endl;
-                                cout << endl;
+                                cout << right << setw(20) << " " << share[i].Stock_Name << "has less stocks than you want to buy";
+                                cout << right << setw(20) << " " << endl;
+                                cout << right << setw(20) << " " << "Hit any key to return" << endl;
+                                cout << right << setw(20) << " " << endl;
                                 getch();
                                 system("cls");
                                 goto start;
                             }
                             else if(cus[index].Balance <= volume*share[i].currentPrice)
                             {
-                                cout << "Not enough money" << endl;
-                                cout << "Hit any key to return" << endl;
-                                cout << endl;
+                                cout << right << setw(20) << " " << "Not enough money" << endl;
+                                cout << right << setw(20) << " " << "Hit any key to return" << endl;
+                                cout << right << setw(20) << " " << endl;
                                 getch();
                                 system("cls");
                                 goto start;
@@ -409,8 +446,8 @@ start:
                         if(i == TOTALSTOCKS-1)
                         {
                             system("cls");
-                            cout << "Wrong code" << endl;
-                            cout << "Hit any ket to return" << endl;
+                            cout << right << setw(20) << " " << "Wrong code" << endl;
+                            cout << right << setw(20) << " " << "Hit any ket to return" << endl;
                             getch();
                             goto start;
                         }
@@ -419,15 +456,15 @@ start:
             }
             else
             {
-                cout << "Wrong format" << endl;
-                cout << "Hit any key to return" << endl;
+                cout << right << setw(20) << " " << "Wrong format" << endl;
+                cout << right << setw(20) << " " << "Hit any key to return" << endl;
                 cin.get();
                 goto start;
             }
             cin.get();
             break;
         }
-        case '2':
+        case '2'://sell
         {
             time_t endtime = time(NULL);
             double floatRange[10] = {0};
@@ -502,7 +539,7 @@ start:
             }
             cin.get();
 
-            cout << endl << "Enter the stock code you want to sell: ";
+            cout << right << setw(20) << " " << endl << "Enter the stock code you want to sell: ";
             code = "";
             cin >> code;
             if (code == "0")
@@ -512,8 +549,8 @@ start:
 
             while (code.size() > 5 || code.size() <= 0)
             {
-                cout << "Stock code has to be less than 5 characters or 1 above" << endl;
-                cout << "Enter the stock code you want to sell: (Enter 0 to return)";
+                cout << right << setw(20) << " " << "Stock code has to be less than 5 characters or 1 above" << endl;
+                cout << right << setw(20) << " " << "Enter the stock code you want to sell: (Enter 0 to return)";
                 cin >> code;
                 if (code == "0")
                 {
@@ -531,17 +568,17 @@ start:
                     {
                         if( share[i].Close_Selling == 1 )
                         {
-                            cout << "The stock has paused trading" << endl;
+                            cout << right << setw(20) << " " << "The stock has paused trading" << endl;
                             break;
                         }
                         else
                         {
                             flag = 1;
-                            cout << "Enter how much you want to sell: ";
+                            cout << right << setw(20) << " " << "Enter how much you want to sell: ";
                             cin >> volume;
                             while(volume != (int)volume)
                             {
-                                cout<<"Please enter an integer"<<endl;
+                                cout << right << setw(20) << " " <<"Please enter an integer"<<endl;
                                 cin >> volume;
                             }
                             if(cus[index].share_holding_value[i] >= volume)
@@ -551,16 +588,16 @@ start:
                                 cus[index].Balance += share[i].currentPrice*volume;
                                 cus[index].Holding_Market_Value -= share[i].currentPrice*volume;
                                 system("cls");
-                                cout << "Done" << endl;
-                                cout << endl;
+                                cout << right << setw(20) << " " << "Done" << endl;
+                                cout << right << setw(20) << " " << endl;
 
                                 StockWrite(share);
                             }
                             else
                             {
-                                cout << "You don't have enough stocks to sell";
-                                cout << endl;
-                                cout << "Hit any key to return" << endl;
+                                cout << right << setw(20) << " " << "You don't have enough stocks to sell";
+                                cout << right << setw(20) << " " << endl;
+                                cout << right << setw(20) << " " << "Hit any key to return" << endl;
                                 getch();
                                 break;
                             }
@@ -573,8 +610,8 @@ start:
                         if(i == TOTALSTOCKS-1)
                         {
                             system("cls");
-                            cout << "Wrong code" << endl;
-                            cout << "Hit any ket to return" << endl;
+                            cout << right << setw(20) << " " << "Wrong code" << endl;
+                            cout << right << setw(20) << " " << "Hit any ket to return" << endl;
                             getch();
                             goto start;
                         }
@@ -583,7 +620,7 @@ start:
             }
             else
             {
-                cout << endl << "You entered a wrong code ";
+                cout << right << setw(20) << " " << endl << "You entered a wrong code ";
             }
             cin.get();
             break;
@@ -644,7 +681,7 @@ start:
             }
             else
             {
-                cout << "You have not rights to resume the trading of the stock!" << endl;
+                cout << right << setw(20) << " " << "You have not rights to resume the trading of the stock!" << endl;
                 getch();
                 break;
             }
@@ -704,7 +741,7 @@ start:
             }
             else
             {
-                cout << "You have not rights to stop the trading" << endl ;
+                cout << right << setw(20) << " " << "You have not rights to stop the trading" << endl ;
                 getch();
                 break;
             }
@@ -765,7 +802,7 @@ start:
             }
             else
             {
-                cout << "You have no rights to pause the trading of the stock" << endl;
+                cout << right << setw(20) << " " << "You have no rights to pause the trading of the stock" << endl;
                 getch();
                 break ;
             }
@@ -810,8 +847,13 @@ start:
             {
                 cout<< "~";
             }
-            cout << endl << right << setw(30) << "Company Name" << setw(30) << "Company Code" << setw(30) << "Floating Stocks" << setw(30)
-                 << "Stock Listed Price" << setw(30) << "Current Price" << setw(30) << "Status" <<endl;
+            cout << endl
+                 << right << setw(30) << "Company Name"
+                 << setw(30) << "Company Code"
+                 << setw(30) << "Floating Stocks"
+                 << setw(30) << "Stock Listed Price"
+                 << setw(30) << "Current Price"
+                 << setw(30) << "Status" <<endl;
             for(int i=0; i < TOTALSTOCKS; i++)
             {
                 Display_Stock_Market_Information(share, i, floatRange);
@@ -825,9 +867,9 @@ start:
             cout << right << setw(15) << cus[index].Holding_Market_Value << setw(22) << cus[index].Balance
                  << setw(17) << cus[index].Total_Assets << endl;
 
-            cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << endl;
-            cout << "\t\t\t\tStock you own" << endl << endl;
-            cout << right << setw(20) << "Name" << setw(20) << "Code" << setw(20) << "Shares" << endl;
+            cout << right << setw(20) << " " << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << endl;
+            cout << right << setw(20) << " " << "\t\t\t\tStock you own" << endl << endl;
+            cout << right << setw(20) << " " << "Name" << setw(20) << "Code" << setw(20) << "Shares" << endl;
 
             for (int j=0; j<TOTALSTOCKS; j++)
             {
@@ -837,7 +879,7 @@ start:
                 }
                 else
                 {
-                    cout << right << setw(20) << cus[index].share_holding_name[j] << setw(20)
+                    cout << right << setw(20) << " " << cus[index].share_holding_name[j] << setw(20)
                          << cus[index].share_holding_code[j] << setw(20) << cus[index].share_holding_value[j] << endl;
                 }
             }
@@ -994,8 +1036,9 @@ void Stock::Switch_choice(vector <Stock> share, char choice, vector <Customer> c
                     break;
                 }
             }
-            cout << "Sign in successfully" <<endl;
-            cin.get();
+            cout << endl;
+            cout << "Sign in successfully" << endl;
+            cout << "Hit any key to return" << endl;
             getch();
             cus[i].Stock_Portfolio(share, cus, i);
             break;
@@ -1026,7 +1069,7 @@ void Display_Stock_Market_Information(vector <Stock> share, int index, double fl
          << left  << setw(30) << share[index].Stock_Name
          << left  << setw(30) << share[index].Stock_Code
          << left  << setw(30) << share[index].Free_Stocks_Float
-         << left  << setw(30) << share[index].Stock_Listed_Price;
+         << left  << setw(30) << fixed << setprecision(2) << share[index].Stock_Listed_Price;
 
     if(share[index].color == 1)//red
     {
