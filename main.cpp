@@ -294,7 +294,7 @@ start:
                 cout<< "~";
             }
             cout << right << setw(20) << " "
-                 << left  << setw(30) << "Market Value of owned Stock"
+                 << left  << setw(30) << "Market Value of Owned Stock"
                  << left  << setw(30) << "Money"
                  << left  << setw(30) << "Total Assets" << endl << endl;
             cus[index].Count_Total_Assets(share);
@@ -525,7 +525,7 @@ start:
             }
 
             cout << right << setw(20) << " "
-                 << left  << setw(30) << "Market Value of Holding Stock"
+                 << left  << setw(30) << "Market Value of Owned Stock"
                  << left  << setw(30) << "Money"
                  << left  << setw(30) << "Total Assets" << endl;
 
@@ -929,7 +929,7 @@ start:
             }
 
             cout << right << setw(20) << " "
-                 << left  << setw(30) << "Market Value of Holding Stock"
+                 << left  << setw(30) << "Market Value of Owned Stock"
                  << left  << setw(30) << "Money"
                  << left  << setw(30) << "Total Assets" << endl;
 
@@ -1222,7 +1222,7 @@ void Stock::Close_Selling_Stock(vector <Stock> &share, vector <Customer> cus, in
                 flag = 1;
                 cout << right << setw(20) << " " << "Confirm(y/n)";
                 cin >> input;
-                if(input == 'y' || input == 'Y'
+                if(input == 'y' || input == 'Y')
                 {
                     share[i].Close_Selling = 1;
                     StockWrite(share);
