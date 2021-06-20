@@ -1,21 +1,17 @@
 #include <iostream>
-#include <cstring>
 #include <conio.h>//getch()
 #include <fstream>
 #include <iomanip>
 #include <vector>
 #include <time.h>
 #include <string>
-#include <vector>
-#include <thread>
 #include <windows.h>
-#include <cstdlib>
 using namespace std;
 
-const int TOTALSTOCKS = 10;//how many stocks
+const int TOTALSTOCKS = 10;//Total stocks number
 time_t startTime;
-int flag;
 double Random();// function that controls the float
+void Interface(vector <Stock>, vector <Customer>);
 int main();
 
 class Customer;
@@ -24,51 +20,49 @@ class Stock
 {
     friend class Customer;
 private:
-    unsigned long long Free_Stocks_Float;//�ۥѬy�q�ѥ� //10�쥿��� //0 �� 4,294,967,295 //1�i1000��
-    string Stock_Name;            //�Ѳ��W��
-    string Stock_Code;             //�Ѳ��N�X
-    double Stock_Listed_Price;      //�Ѳ��W����
-    double Market_Value;            //�Ѳ�����         //����
-    double currentPrice;            //�R���       //����
-    bool Close_Selling;             //�O�_�Ȱ�����Ҩ�]1���O�A0���_�^//�쥻�i�H�Ĩ骺�Ѳ��A�Ȯɤ���A�H�Ĩ��X�C//Short_Selling_Suspended
-    int color;                      //1 for red, 2 for green, 3 for white
+    unsigned long long Free_Stocks_Float;//How many shares of stocks available on the market
+    string Stock_Name;
+    string Stock_Code;
+    double Stock_Listed_Price;//The original price on the market
+    double Market_Value;
+    double currentPrice;
+    bool Close_Selling;//Trading stopped or not
+    int color;//1 for red, 2 for green, 3 for white, indicating increase or decrease
 public:
     Stock(string name = "", string code = "",unsigned long long freefloat = 0, double listedPrice = 0, double value = 0, double current = 0, bool close = 0)
     {
         Stock_Name = name;
         Stock_Code = code;
-        Free_Stocks_Float = freefloat;//��l�ۥѬy�q�ѥ�
+        Free_Stocks_Float = freefloat;
         Stock_Listed_Price = listedPrice;
         Market_Value = value;
         currentPrice = current;
         Close_Selling = close;
         color = 3;
     }
-    void Close_Selling_Stock(vector <Stock>&, vector <Customer>, int); //�Ȱ��Ѳ����
-    void Start_Selling_Stock(vector <Stock>&, vector <Customer>, int); //��_�Ѳ����
+    void Close_Selling_Stock(vector <Stock>&, vector <Customer>, int); //Stop trading
+    void Start_Selling_Stock(vector <Stock>&, vector <Customer>, int); //Resume trading
     void Modify_Stock(vector <Stock>&);//�ק�Ѳ����(�޲z��)
 
-    friend void Display_Stock_Market_Information(vector <Stock>, int, double[]);//��ܫH��
-    void Switch_choice(vector <Stock>, char,vector <Customer>); //�\����
+    friend void Display_Stock_Market_Information(vector <Stock>, int, double[]);
+    void Switch_choice(vector <Stock>, char ,vector <Customer>);//Menu
     friend void StockWrite(vector <Stock>);
 };
-
-void Interface(vector <Stock>, vector <Customer>);
 
 class Customer
 {
     friend class Stock;
 private:
-    double share_holding_value[10] = {0};   //�����Ѳ��ƶq
-    string Customer_Name;                   //�Τ�W
-    string Customer_Password;               //�K�X
-    string share_holding_name[10] = {"$"};   //�����Ѳ��W��
-    string share_holding_code[10] = {"$"};   //�����Ѳ��N�X
+    double share_holding_value[10] = {0};   //The shares of stock owned
+    string Customer_Name;
+    string Customer_Password;
+    string share_holding_name[10] = {"$"};// Names of stocks owned, $ as no name for now
+    string share_holding_code[10] = {"$"};// Codes of stocks owned
 
-    double Balance;                         //�{���l�B
-    double Holding_Market_Value;            //�����Ѳ�����
-    double Total_Assets;                    //�`�겣
-    bool Administrator;                     //�O�_�޲z��
+    double Balance;
+    double Holding_Market_Value;
+    double Total_Assets;
+    bool Administrator;
 public:
     Customer(string CusName = "", string CusPass = "", vector <string> VHoldName = {"$"},
              vector <string> VHoldCode = {"$"}, vector <double> VHoldValue = {0},
@@ -94,15 +88,14 @@ public:
         Administrator = Admin;
     }
     void Count_Total_Assets(vector <Stock>, vector <Customer>, int );
-    void Log_In(string, vector <Stock>, time_t) const;//�n��
+    void Log_In(string, vector <Stock>, time_t) const;
     void Register(vector <Customer>);//���U
     friend void Display_Stock_Market_Information(vector <Stock>, int);
-    void Stock_Portfolio(vector <Stock>, vector <Customer>, int ) const; // �����Ҩ�
+    void Stock_Portfolio(vector <Stock>, vector <Customer>, int ) const;// Stock market menu
     friend void CustomerWrite(vector <Customer>);
-    //friend void Switch_choice(vector <Stock>, char, time_t);
 };
 
-void Customer::Count_Total_Assets(vector <Stock> share, vector <Customer> cus, int index)//計算總資產
+void Customer::Count_Total_Assets(vector <Stock> share, vector <Customer> cus, int index)
 {
     cus[index].Total_Assets=0;
     for(int i=0; i<10; i++)
@@ -111,20 +104,8 @@ void Customer::Count_Total_Assets(vector <Stock> share, vector <Customer> cus, i
     }
     cus[index].Total_Assets += cus[index].Balance;
 }
-/*void Customer::Log_In(string pass_word, vector <Stock> share, time_t startTime) const//�n��
-{
-    if( pass_word == Customer_Password )//�ֹ�K�X
-    {
-        Stock_Portfolio(share, startTime,);
-    }
-    else
-    {
-        cout << endl;
-        cout << "Wrong password"<<endl;
-    }
-}*/
 
-void Customer::Register(vector <Customer> cus)//註冊
+void Customer::Register(vector <Customer> cus)//Register
 {
     string Name,Password;
     double TotalAssets, Balbace;
@@ -179,14 +160,11 @@ void Customer::Register(vector <Customer> cus)//註冊
         {
             cout << "Default as not a admin"<<endl;
         }
-        WriteFile << endl << Name << ' ' << Password << ' ' ;
-        for(int j=0; j<2; j++)
-        {
-            for(int i=0; i<10; i++)
-            {
-                if(i == 9)
-                {
-                    WriteFile << "$" << ' ' << "|" <<' ';
+       WriteFile << endl << Name << ' ' << Password << ' ' ;
+        for(int j=0; j<2; j++) {
+            for(int i=0; i<10; i++) {
+                if(i == 9) {
+                    WriteFile << "$" << ' ' << "|" <<' ';// | indicates the end of the data
                 }
                 else
                 {
@@ -199,8 +177,7 @@ void Customer::Register(vector <Customer> cus)//註冊
             WriteFile << "0" <<' ';
         }
         WriteFile << "|" <<' '<< Balbace << ' ' << 0 << ' ' << TotalAssets << ' ' << Admin;
-        /*WriteFile << endl << Name << ' ' << Password << ' ' << "|" << ' ' << "|" <<' ' << "|" << ' ' << Balbace << ' ' << 0 << ' '
-                    << TotalAssets << ' ' << Admin;*/
+
         WriteFile.close();
         vector <string> nothing;
         vector <double> nothing1;
@@ -213,51 +190,11 @@ void Customer::Register(vector <Customer> cus)//註冊
         cout << "Hit any key to return" << endl;
         getch();
     }
-    /*char input;
-    system("cls");
-    cin.get();
-    cout << "Welcome to---------------The Stock System---------------" << endl;
-    cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << endl;
-    cout << "Please enter your username: ";
-    cin >> Customer_Name;
-    cout << "Please enter your password:" << endl;
-    cin >> Customer_Password;
-    while (Customer_Password.size() <= 0 || Customer_Password.size() > 8)
-    {
-        cout << "The password has to be less than 8 characters and 1 above" << endl;
-        cout << "Please enter your password:" << endl;
-        cin >> Customer_Password;
-    }
-    cout << endl;
-    cout << "Please enter your starting money";
-    cin >> Total_Assets;
-    Holding_Market_Value = 0;
-    Balance = Total_Assets;
-    cout << "Administrator or not?(y/n)" << endl;//大小寫都行
-    cin >> input;
-    if( (input == 'y') || (input == 'Y') )
-    {
-        Administrator = 1;
-        cout << "Set!";
-    }
-    else if( (input == 'n') || (input == 'N') )
-    {
-        Administrator = 0;
-    }
-    else
-    {
-        cout << "Default as not a admin";
-    }
-    getch();
-    system("cls");//清空
-    cout << "Done!"     << endl;
-    cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << endl;
-    cout << "Hit any key to return" << endl;
-    getch();*/
 }
 
-void Customer::Stock_Portfolio(vector <Stock> share, vector <Customer> cus, int index) const//�Τ����ާ@�����t��
+void Customer::Stock_Portfolio(vector <Stock> share, vector <Customer> cus, int index) const//Stock market menu
 {
+    int flag;
     int i,a;
     char input;
     string code;
@@ -272,7 +209,7 @@ start:
     cout << "\t\t Sell..........................[2]" << endl;
     cout << "\t\t Resume a stock's trading..................[3]" << endl;
     cout << "\t\t Pause a stock's trading..................[4]" << endl;
-    cout << "\t\t Modify a stock's name or code............[5]" << endl;//?i?H?A?s?W?n???
+    cout << "\t\t Modify a stock's name or code............[5]" << endl;
     cout << "\t\t Check the stock market..................[6]" << endl;
     cout << "\t\t Exit......................[0]" << endl;
     cout << endl << "\t\t Enter an option: ";
@@ -285,13 +222,13 @@ start:
     {
         switch(input)
         {
-        case '0'://��^�D����
+        case '0'://exit
         {
             CustomerWrite(cus);
             StockWrite(share);
             main();
         }
-        case '1': //�R�J
+        case '1': //buy
         {
             time_t endtime = time(NULL);
             double floatRange[10] = {0};
@@ -336,7 +273,7 @@ start:
                  << "Stock Listed Price" << setw(30) << "Current Price" << setw(30) << "Status" <<endl;
             for(int i=0; i < TOTALSTOCKS; i++)
             {
-                Display_Stock_Market_Information(share, i, floatRange);//��ܥ����H��
+                Display_Stock_Market_Information(share, i, floatRange);
             }
             for(int i=0; i<237; i++)
             {
@@ -397,8 +334,8 @@ start:
                         }
                         else
                         {
-                            int Max_Buy_Stock_Volume;//�{���l�B�i�R�Ѽ�
-                            Max_Buy_Stock_Volume = int(cus[index].Balance/share[i].currentPrice);//����
+                            int Max_Buy_Stock_Volume;//To calculate how many shares at most the user can but with its balance
+                            Max_Buy_Stock_Volume = int(cus[index].Balance/share[i].currentPrice);
                             cout << "At most you can buy:" << Max_Buy_Stock_Volume << endl;
                             if (Max_Buy_Stock_Volume == 0)
                             {
@@ -412,14 +349,14 @@ start:
                             flag = 1;
                             cout << "Enter how much you want to buy: ";
                             cin >> volume;
-                            while(volume != (int)volume)//�P�_��J�O�_�����
+                            while(volume != (int)volume)//To check if volume is an integer
                             {
                                 cout<<"Please enter an integer"<<endl;
                                 cin >> volume;
                             }
                             if( (share[i].Free_Stocks_Float >= volume) && (cus[index].Balance >= volume*share[i].currentPrice) )
                             {
-                                //��ʦU�ƾ�
+                                //Modifying datas
                                 cus[index].share_holding_value[i] += volume;
                                 cus[index].share_holding_name[i] = share[i].Stock_Name;
                                 cus[index].share_holding_code[i] = share[i].Stock_Code;
@@ -530,7 +467,7 @@ start:
                  << "Stock Listed Price" << setw(30) << "Current Price" << setw(30) << "Status" <<endl;
             for(int i=0; i < TOTALSTOCKS; i++)
             {
-                Display_Stock_Market_Information(share, i, floatRange);//��ܥ����H��
+                Display_Stock_Market_Information(share, i, floatRange);
             }
             for(int i=0; i<237; i++)
             {
@@ -597,7 +534,7 @@ start:
                             flag = 1;
                             cout << "Enter how much you want to sell: ";
                             cin >> volume;
-                            while(volume != (int)volume)//?P?_??J?O?_?????
+                            while(volume != (int)volume)
                             {
                                 cout<<"Please enter an integer"<<endl;
                                 cin >> volume;
@@ -646,7 +583,7 @@ start:
             cin.get();
             break;
         }
-        case '3'://��_�Ѳ����
+        case '3'://Resume trading
         {
             time_t endtime = time(NULL);
             double floatRange[10] = {0};
@@ -694,7 +631,7 @@ start:
                      << "Stock Listed Price" << setw(30) << "Current Price" << setw(30) << "Status" <<endl;
                 for(int i=0; i < TOTALSTOCKS; i++)
                 {
-                    Display_Stock_Market_Information(share, i, floatRange);//��ܥ����H��
+                    Display_Stock_Market_Information(share, i, floatRange);
                 }
                 cin.get();
                 temp.Start_Selling_Stock(share, cus, index);
@@ -707,7 +644,7 @@ start:
                 break;
             }
         }
-        case '4'://����Ѳ�
+        case '4'://Stop trading
         {
             time_t endtime = time(NULL);
             double floatRange[10] = {0};
@@ -762,12 +699,12 @@ start:
             }
             else
             {
-                cout << "You have not rights to hang the stock" << endl ;
+                cout << "You have not rights to stop the trading" << endl ;
                 getch();
                 break;
             }
         }
-        case '5'://�ק�Ѳ�
+        case '5'://Modify datas
         {
             time_t endtime = time(NULL);
             double floatRange[10] = {0};
@@ -815,7 +752,7 @@ start:
                      << "Stock Listed Price" << setw(30) << "Current Price" << setw(30) << "Status" <<endl;
                 for(int i=0; i < TOTALSTOCKS; i++)
                 {
-                    Display_Stock_Market_Information(share, i, floatRange);//��ܥ����H��
+                    Display_Stock_Market_Information(share, i, floatRange);
                 }
                 cin.get();
                 temp.Modify_Stock(share);
@@ -828,7 +765,7 @@ start:
                 break ;
             }
         }
-        case '6'://�d�ݫH��
+        case '6'://Show the stock market
             time_t endtime = time(NULL);
             double floatRange[10] = {0};
             if (endtime - startTime >= 1)
@@ -872,7 +809,7 @@ start:
                  << "Stock Listed Price" << setw(30) << "Current Price" << setw(30) << "Status" <<endl;
             for(int i=0; i < TOTALSTOCKS; i++)
             {
-                Display_Stock_Market_Information(share, i, floatRange);//��ܥ����H��
+                Display_Stock_Market_Information(share, i, floatRange);
             }
             for(int i=0; i<237; i++)
             {
@@ -882,11 +819,6 @@ start:
             cus[index].Count_Total_Assets(share, cus, index);
             cout << right << setw(15) << cus[index].Holding_Market_Value << setw(22) << cus[index].Balance
                  << setw(17) << cus[index].Total_Assets << endl;
-            /*cout << "\t\t\t~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << endl;
-            cout << "Market Value of Holding Stock\t\tMoney\tTotal Assets"<<endl;
-            cout << " " << cus[index].Holding_Market_Value
-                 << "\t\t\t" << cus[index].Balance
-                 << "\t\t" << cus[index].Total_Assets << endl;*/
 
             cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << endl;
             cout << "\t\t\t\tStock you own" << endl << endl;
@@ -935,7 +867,7 @@ void Stock::Switch_choice(vector <Stock> share, char choice, vector <Customer> c
     char pass_word[10];
     switch(choice)
     {
-    case '0': //�N�h�X
+    case '0': //Exit
     {
         system("cls");
         cout << "Good Bye" << endl;
@@ -943,7 +875,7 @@ void Stock::Switch_choice(vector <Stock> share, char choice, vector <Customer> c
         CustomerWrite(cus);
         exit(0);
     }
-    case '1': //進入交易市場
+    case '1': //Show the stock system
     {
         time_t endtime = time(NULL);
         double floatRange[10] = {0};
@@ -994,7 +926,7 @@ void Stock::Switch_choice(vector <Stock> share, char choice, vector <Customer> c
              << left  << setw(30) << "Status" <<endl;
         for(int i=0; i < TOTALSTOCKS; i++)
         {
-            Display_Stock_Market_Information(share, i, floatRange);//��ܥ����T��
+            Display_Stock_Market_Information(share, i, floatRange);
         }
         for(int i=0; i<237; i++)
         {
@@ -1006,7 +938,7 @@ void Stock::Switch_choice(vector <Stock> share, char choice, vector <Customer> c
         Interface(share, cus);
         break;
     }
-    case '2'://用戶登入
+    case '2'://Log in with an exists account
     {
         int i = 0;
         string acc, pass;
@@ -1064,7 +996,7 @@ void Stock::Switch_choice(vector <Stock> share, char choice, vector <Customer> c
             break;
         }
     }
-    case '3':  //註冊新用戶
+    case '3':// Register as a new user
     {
         Customer cust;
         system("cls");
@@ -1120,8 +1052,9 @@ void Display_Stock_Market_Information(vector <Stock> share, int index, double fl
     }
 }
 
-void Stock::Close_Selling_Stock(vector <Stock> &share, vector <Customer> cus, int index)//�Ȱ��Ѳ����
+void Stock::Close_Selling_Stock(vector <Stock> &share, vector <Customer> cus, int index)//Stop trading
 {
+    int flag;
     char input;
     string share_code = "";
     Customer cust;
@@ -1181,9 +1114,10 @@ void Stock::Close_Selling_Stock(vector <Stock> &share, vector <Customer> cus, in
     getch();
 }
 
-void Stock::Start_Selling_Stock(vector <Stock> &share,vector <Customer> cus, int index) //��_�Ѳ����
+void Stock::Start_Selling_Stock(vector <Stock> &share,vector <Customer> cus , int index)//Resume trading
 {
     char input;
+    int flag;
     Customer cust;
     string share_code = "";
     cout << "Enter the stock code you want to resume trading: (Enter 0 to return)";
@@ -1238,8 +1172,9 @@ void Stock::Start_Selling_Stock(vector <Stock> &share,vector <Customer> cus, int
     getch();
 }
 
-void Stock::Modify_Stock(vector <Stock> &t)//�վ��T
+void Stock::Modify_Stock(vector <Stock> &t)
 {
+    int flag;
     flag = 0;
     int i=0;
     string share_name = "", share_code = "";
@@ -1271,7 +1206,7 @@ void Stock::Modify_Stock(vector <Stock> &t)//�վ��T
                     cin >> share_name;
                     while (share_name.size() > 20 || share_name.size() <= 0)
                     {
-                        cout << "�Ѳ��W�ٻݤp��20�r���Φܤ֦��@�Ӧr��" << endl;
+                        cout << "The name has to be less than 20 characters or 1 above" << endl;
                         cout << "Enter new name (below 20 characters)";
                         cin >> share_name;
                     }
@@ -1304,7 +1239,7 @@ void Stock::Modify_Stock(vector <Stock> &t)//�վ��T
     }
     else
     {
-        cout << "��J���~!";
+       cout << "Wrong format";
     }
 }
 
