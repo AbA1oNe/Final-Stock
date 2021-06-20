@@ -20,7 +20,7 @@ class Stock
 {
     friend class Customer;
 private:
-    unsigned long long Free_Stocks_Float;//How many shares of stocks available on the market
+    long long Free_Stocks_Float;//How many shares of stocks available on the market
     string Stock_Name;
     string Stock_Code;
     double Stock_Listed_Price;//The original price on the market
@@ -55,7 +55,7 @@ class Customer
 {
     friend class Stock;
 private:
-    double share_holding_value[10] = {0};   //The shares of stock owned
+    long long share_holding_value[10] = {0};   //The shares of stock owned
     string Customer_Name;
     string Customer_Password;
     string share_holding_name[10] = {"$"};// Names of stocks owned, $ as no name for now
@@ -1470,7 +1470,7 @@ int main()
 
             while(file >> share_holding_value && share_holding_value != "|")
             {
-                double SHV = stod(share_holding_value);
+                double SHV = stoll(share_holding_value);
                 ShareHoldingValue.push_back(SHV);
             }
 
