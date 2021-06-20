@@ -44,7 +44,7 @@ public:
     void Modify_Stock(vector <Stock>&);
 
     friend void Display_Stock_Market_Information(vector <Stock>, int, double[]);
-    void Switch_choice(vector <Stock>, char ,vector <Customer>);//Menu
+    void Switch_choice(vector <Stock>, char,vector <Customer>); //Menu
     friend void StockWrite(vector <Stock>);
 };
 
@@ -161,10 +161,13 @@ void Customer::Register(vector <Customer> cus)//Register
         {
             cout << "Default as not a admin"<<endl;
         }
-       WriteFile << endl << Name << ' ' << Password << ' ' ;
-        for(int j=0; j<2; j++) {
-            for(int i=0; i<10; i++) {
-                if(i == 9) {
+        WriteFile << endl << Name << ' ' << Password << ' ' ;
+        for(int j=0; j<2; j++)
+        {
+            for(int i=0; i<10; i++)
+            {
+                if(i == 9)
+                {
                     WriteFile << "$" << ' ' << "|" <<' ';// | indicates the end of the data
                 }
                 else
@@ -934,7 +937,7 @@ void Stock::Switch_choice(vector <Stock> share, char choice, vector <Customer> c
             cout<< "~";
         }
         cout << endl << right
-              << setw(20) << " " << "Hit any key to return";
+             << setw(20) << " " << "Hit any key to return";
         getch();
         Interface(share, cus);
         break;
@@ -1013,44 +1016,28 @@ void Stock::Switch_choice(vector <Stock> share, char choice, vector <Customer> c
 
 void Display_Stock_Market_Information(vector <Stock> share, int index, double floatRange[])
 {
-    if (share[index].color == 1)//red
-    {
-        cout << right << setw(20) << " "
-             << left  << setw(30) << share[index].Stock_Name
-             << left  << setw(30) << share[index].Stock_Code
-             << left  << setw(30) << share[index].Free_Stocks_Float
-             << left  << setw(30) << share[index].Stock_Listed_Price;
+    cout << right << setw(20) << " "
+         << left  << setw(30) << share[index].Stock_Name
+         << left  << setw(30) << share[index].Stock_Code
+         << left  << setw(30) << share[index].Free_Stocks_Float
+         << left  << setw(30) << share[index].Stock_Listed_Price;
 
-        SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_INTENSITY | FOREGROUND_RED);
+    if(share[index].color == 1)//red
+    {
+        SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_INTENSITY | FOREGROUND_RED);//change red color
         cout << left << setw(30) << share[index].currentPrice << "(+" << floatRange[index] * 100 << "%)";
-
-        SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);//white
-        cout << left << setw(30) << (share[index].Close_Selling == 0?"Trading Not Stopped":"Trading Stopped") << endl;
     }
-    else if (share[index].color == 2)//green
+    else if(share[index].color == 2)//green
     {
-        cout << right << setw(25)   <<  share[index].Stock_Name
-             << setw(30) << share[index].Stock_Code
-             << setw(30) << share[index].Free_Stocks_Float
-             << setw(30) << share[index].Stock_Listed_Price
-             << setw(30);
-        SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_INTENSITY | FOREGROUND_GREEN);
-        cout << share[index].currentPrice << '(' << floatRange[index] * 100 << "%)"
-             << setw(30);
-        SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);//white
-        cout << (share[index].Close_Selling == 0?"Trading Not Stopped":"Trading Stopped") << endl;
+        SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_INTENSITY | FOREGROUND_GREEN);//change green color
+        cout << left << setw(30) << share[index].currentPrice << '(' << floatRange[index] * 100 << "%)";
     }
-    else
+    else//No change
     {
-        cout << right << setw(25)   <<  share[index].Stock_Name
-             << setw(30) << share[index].Stock_Code
-             << setw(30) << share[index].Free_Stocks_Float
-             << setw(30) << share[index].Stock_Listed_Price << '(' << floatRange[index] * 100 << ')'
-             << setw(30);
-        SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);//white
-        cout << share[index].currentPrice
-             << setw(40) << (share[index].Close_Selling == 0?"Trading Not Stopped":"Trading Stopped") << endl;
+        cout << left << setw(30) << share[index].currentPrice << '(' << floatRange[index] * 100 << "%)";
     }
+    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);//white
+    cout << left << setw(30) << (share[index].Close_Selling == 0?"Trading Not Stopped":"Trading Stopped") << endl;
 }
 
 void Stock::Close_Selling_Stock(vector <Stock> &share, vector <Customer> cus, int index)//Stop trading
@@ -1115,7 +1102,7 @@ void Stock::Close_Selling_Stock(vector <Stock> &share, vector <Customer> cus, in
     getch();
 }
 
-void Stock::Start_Selling_Stock(vector <Stock> &share,vector <Customer> cus , int index)//Resume trading
+void Stock::Start_Selling_Stock(vector <Stock> &share,vector <Customer> cus, int index) //Resume trading
 {
     char input;
     int flag;
@@ -1240,7 +1227,7 @@ void Stock::Modify_Stock(vector <Stock> &t)
     }
     else
     {
-       cout << "Wrong format";
+        cout << "Wrong format";
     }
 }
 
