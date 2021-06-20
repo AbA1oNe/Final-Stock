@@ -20,7 +20,7 @@ class Stock
 {
     friend class Customer;
 private:
-    unsigned long long Free_Stocks_Float;//How many shares of stocks available on the market
+    long long Free_Stocks_Float;//How many shares of stocks available on the market
     string Stock_Name;
     string Stock_Code;
     double Stock_Listed_Price;//The original price on the market
@@ -55,7 +55,7 @@ class Customer
 {
     friend class Stock;
 private:
-    double share_holding_value[10] = {0};   //The shares of stock owned
+    long long share_holding_value[10] = {0};   //The shares of stock owned
     string Customer_Name;
     string Customer_Password;
     string share_holding_name[10] = {"$"};// Names of stocks owned, $ as no name for now
@@ -911,12 +911,14 @@ start:
                 cout<< "~";
             }
             cout << endl
-                 << right << setw(30) << "Company Name"
-                 << setw(30) << "Company Code"
-                 << setw(30) << "Floating Stocks"
-                 << setw(30) << "Stock Listed Price"
-                 << setw(30) << "Current Price"
-                 << setw(30) << "Status" <<endl;
+                 << right << setw(20) << " "
+                 << left  << setw(30) << "Company Name"
+                 << left  << setw(30) << "Company Code"
+                 << left  << setw(30) << "Floating Stocks"
+                 << left  << setw(30) << "Stock Listed Price"
+                 << left  << setw(30) << "Current Price"
+                 << left  << setw(30) << "Status" <<endl;
+
             for(int i=0; i < TOTALSTOCKS; i++)
             {
                 Display_Stock_Market_Information(share, i, floatRange);
@@ -925,25 +927,42 @@ start:
             {
                 cout<< "~";
             }
-            cout << right << setw(20) << "Market Value of Holding Stock" << setw(10) << "Money" << setw(20) << "Total Assets"<< endl;
-            cus[index].Count_Total_Assets(share);
-            cout << right << setw(15) << cus[index].Holding_Market_Value << setw(22) << cus[index].Balance
-                 << setw(17) << cus[index].Total_Assets << endl;
 
-            cout << right << setw(20) << " " << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << endl;
-            cout << right << setw(20) << " " << "\t\t\t\tStock you own" << endl << endl;
-            cout << right << setw(20) << " " << "Name" << setw(20) << "Code" << setw(20) << "Shares" << endl;
+            cout << right << setw(20) << " "
+                 << left  << setw(30) << "Market Value of Holding Stock"
+                 << left  << setw(30) << "Money"
+                 << left  << setw(30) << "Total Assets" << endl;
+
+            cus[index].Count_Total_Assets(share);
+
+            cout << right << setw(20) << " "
+                 << left  << setw(30) << fixed << setprecision(2) << cus[index].Holding_Market_Value
+                 << left  << setw(30) << fixed << setprecision(2) << cus[index].Balance
+                 << left  << setw(30) << fixed << setprecision(2) << cus[index].Total_Assets << endl;
+
+            for(int i=0; i<237; i++)
+            {
+                cout<< "~";
+            }
+            cout << right << setw(20) << " "
+                 << left  << setw(30) << "Stock you own" << endl << endl
+                 << right << setw(20) << " "
+                 << left  << setw(30) << "Name"
+                 << left  << setw(30) << "Code"
+                 << left  << setw(30) << "Shares" << endl;
 
             for (int j=0; j<TOTALSTOCKS; j++)
             {
-                if (cus[index].share_holding_name[j] == "$")//this means no name in the array
+                if (cus[index].share_holding_name[j] == "$" || cus[index].share_holding_value[j] == 0)//this means no name in the array
                 {
                     continue;
                 }
                 else
                 {
-                    cout << right << setw(20) << " " << cus[index].share_holding_name[j] << setw(20)
-                         << cus[index].share_holding_code[j] << setw(20) << cus[index].share_holding_value[j] << endl;
+                    cout << right << setw(20) << " "
+                         << left  << setw(30) << cus[index].share_holding_name[j]
+                         << left  << setw(30) << cus[index].share_holding_code[j]
+                         << left  << setw(30) << cus[index].share_holding_value[j] << endl;
                 }
             }
             getch();
@@ -1470,7 +1489,7 @@ int main()
 
             while(file >> share_holding_value && share_holding_value != "|")
             {
-                double SHV = stod(share_holding_value);
+                long long SHV = stoll(share_holding_value);
                 ShareHoldingValue.push_back(SHV);
             }
 
