@@ -42,7 +42,7 @@ public:
     }
     void Close_Selling_Stock(vector <Stock>&, vector <Customer>, int); //Stop trading
     void Start_Selling_Stock(vector <Stock>&, vector <Customer>, int); //Resume trading
-    void Modify_Stock(vector <Stock>&);
+    void Modify_Stock(vector <Stock>&, vector <Customer>&);
 
     friend void Display_Stock_Market_Information(vector <Stock>, int, double[]);
     void Switch_choice(vector <Stock>, char,vector <Customer>); //Menu
@@ -860,7 +860,7 @@ start:
                     cout<< "~";
                 }
                 cin.get();
-                temp.Modify_Stock(share);
+                temp.Modify_Stock(share, cus);
                 break;
             }
             else
@@ -1222,7 +1222,7 @@ void Stock::Close_Selling_Stock(vector <Stock> &share, vector <Customer> cus, in
                 flag = 1;
                 cout << right << setw(20) << " " << "Confirm(y/n)";
                 cin >> input;
-                if(input == 'y')
+                if(input == 'y' || input == 'Y'
                 {
                     share[i].Close_Selling = 1;
                     StockWrite(share);
@@ -1230,7 +1230,7 @@ void Stock::Close_Selling_Stock(vector <Stock> &share, vector <Customer> cus, in
                     cout << right << setw(20) << " " << endl;
                     break;
                 }
-                else if(input=='n')
+                else if(input=='n' || input=='N')
                 {
                     cout << right << setw(20) << " " << "Canceled" << endl;
                 }
@@ -1286,7 +1286,7 @@ void Stock::Start_Selling_Stock(vector <Stock> &share,vector <Customer> cus, int
             flag = 1;
             cout << right << setw(20) << " " << "Confirm(y/n)";
             cin >> input;
-            if(input == 'y')
+            if(input == 'y' || input == 'Y')
             {
                 share[i].Close_Selling = 0;
                 StockWrite(share);
@@ -1294,7 +1294,7 @@ void Stock::Start_Selling_Stock(vector <Stock> &share,vector <Customer> cus, int
                 cout << right << setw(20) << " " << endl;
                 break;
             }
-            else if(input == 'n')
+            else if(input=='n' || input=='N')
             {
                 cout << right << setw(20) << " " << "Canceled" << endl;
             }
@@ -1313,7 +1313,7 @@ void Stock::Start_Selling_Stock(vector <Stock> &share,vector <Customer> cus, int
     getch();
 }
 
-void Stock::Modify_Stock(vector <Stock> &t)
+void Stock::Modify_Stock(vector <Stock> &t, vector <Customer> &cus)
 {
     int flag;
     flag = 0;
@@ -1355,15 +1355,25 @@ void Stock::Modify_Stock(vector <Stock> &t)
                     cin.get();
                     cout << right << setw(20) << " " << "Enter new stock code (below 5 characters)";
                     cout << right << setw(20) << " " << endl;
-                    cin >> share_code;
-                    while (share_code.size() > 5 || share_code.size() <= 0)
+                    string New_share_code;
+                    cin >> New_share_code;
+                    while (New_share_code.size() > 5 || New_share_code.size() <= 0)
                     {
                         cout << right << setw(20) << " " << "Stock code has to be less than 5 characters or 1 above" << endl;
                         cout << right << setw(20) << " " << "Enter the new stock code:";
-                        cin >> share_code;
+                        cin >> New_share_code;
                     }
-                    t[i].Stock_Code = share_code;
+                    for(int j=0; j<cus.size(); j++) {
+                        for(int k=0; k<10; k++) {
+                            if(share_code == cus[j].share_holding_code[k]) {
+                                cus[j].share_holding_name[k] = share_name;
+                                cus[j].share_holding_code[k] = New_share_code;
+                            }
+                        }
+                    }
+                    t[i].Stock_Code = New_share_code;
                     StockWrite(t);
+                    CustomerWrite(cus);
                 }
             }
             else
